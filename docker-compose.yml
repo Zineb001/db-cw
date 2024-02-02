@@ -1,0 +1,27 @@
+version: '3.8'
+services:
+  react-app:
+    build: ./react-frontend
+    ports:
+      - "3000:3000"
+  node-app:
+    build: ./node-backend
+    environment:
+      - PGHOST=postgres
+      - PGUSER=postgres
+      - PGPASSWORD=mysecretpassword
+      - PGDATABASE=hello_world_db
+    ports:
+      - "3001:3001"
+    depends_on:
+      - postgres
+  postgres:
+    image: postgres
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=hello_world_db
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
