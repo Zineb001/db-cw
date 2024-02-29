@@ -10,21 +10,18 @@ services:
       - PGHOST=postgres
       - PGUSER=postgres
       - PGPASSWORD=mysecretpassword
-      - PGDATABASE=hello_world_db
+      - PGDATABASE=coursework
     ports:
       - "3001:3001"
     depends_on:
       - postgres
-  db:
-    image: postgres:latest
+  postgres:
+    image: postgres
     environment:
-      POSTGRES_DB: coursework
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: mysecretpassword
-    ports:
-      - "5432:5432"
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_DB=coursework
     volumes:
-      - db-data:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql/data
 volumes:
-  db-data:
-
+  pgdata:
