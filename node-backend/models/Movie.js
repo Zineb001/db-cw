@@ -3,6 +3,7 @@ class Movie {
     id,
     title,
     genre,
+    directors = [],
     actors = [],
     content,
     releaseDate,
@@ -12,9 +13,10 @@ class Movie {
     tags = [],
     poster
   ) {
-    this.id = ifd;
+    this.id = id;
     this.title = title;
     this.genre = genre;
+    this.directors = directors;
     this.actors = actors;
     this.content = content;
     this.releaseDate = releaseDate;

@@ -1,9 +1,9 @@
 const genreService = require("../services/GenreServices");
 
 // Controller function to handle GET request for users
-async function getGenres(req, res) {
+async function getGenreNames(req, res) {
   try {
-    const genres = await genreService.getGenres(); // Call the getUsers function from the userService
+    const genres = await genreService.getGenreNames(); // Call the getUsers function from the userService
     res.json(genres); // Send the users as JSON response
   } catch (error) {
     console.error(error);
@@ -12,5 +12,5 @@ async function getGenres(req, res) {
 }
 
 module.exports = {
-  getGenres,
+  getGenreNames,
 };

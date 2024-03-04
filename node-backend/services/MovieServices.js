@@ -2,57 +2,46 @@ const Movie = require("../models/Movie");
 const Director = require("../models/Director");
 const Genre = require("../models/Genre");
 
-function getRandomIndex(max) {
-  return Math.floor(Math.random() * max);
-}
+const DirectorService = require("../services/DirectorServices");
+
+const express = require('express');
+const cors = require('cors');
+const { Pool } = require('pg');
+
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'postgres', // This should match the service name in docker-compose.yml
+  database: 'coursework',
+  password: 'mysecretpassword',
+  port: 5432,
+});
+
 
 // Define a function to fetch user data from the database
 async function getMovies() {
   try {
     // Example: Fetch all users from the database
-    const movie = new Movie(
-      "1",
-      "Geras filmukas",
-      "Thriller",
-      "Kapriukas",
-      "About a dog which saved a pigeon from falling into a dungeon",
-      "2023",
-      "4.5",
-      "10000",
-      ["cute", "funny"],
-      "link"
-    );
-    return movie;
-  } catch (error) {
-    throw new Error("Failed to fetch movies");
-  }
-}
+    const client = await pool.connect();
+    const result = await client.query('SELECT * FROM "MOVIE"');
+    client.release();
 
-function generateMovies(numMovies) {
-  const movies = [];
-  for (let i = 1; i <= numMovies; i++) {
-    const movie = new Movie(
-      i,
-      `Movie ${i}`,
-      `Genre ${i % 5}`,
-      [`Actor1 ${i}`, `Actor2 ${i}`],
-      `Content for Movie ${i}`,
-      2024,
-      Number((i * 0.4).toFixed(2)),
-      2,
-      [`ratings ${i}`],
-      [`Tag ${i}`],
-      `PosterLink ${i}`
-    );
-    movies.push(movie);
-  }
-  return movies;
-}
-
-async function getSoonReleasedMovies() {
-  try {
-    //Randomly select 5 movies (of diferent directors) and then get movies by those directors
-    const movies = generateMovies(10);
+    const movies = result.rows.map(row => {
+      return new Movie(
+        row.id,
+        row.title,
+        row.genre,
+        row.directors,
+        row.actors,
+        row.content,
+        row.releaseDATE,
+        row.averageRating,
+        row.sdRating,
+        row.ratingCount,
+        row.tags,
+        row.poster
+      );
+    });
 
     return movies;
   } catch (error) {
@@ -60,24 +49,82 @@ async function getSoonReleasedMovies() {
   }
 }
 
-async function searchMovies(title, releaseYears, cast, genres, rating, tags) {
+function sortMovies(movies)
+{
+  movies.sort((a, b) => b.ratingCount - a.ratingCount);
+  return movies;
+}
+
+async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre, rating, tag) {
   try {
-    const movies = generateMovies(10);
-    // Fetch all movies by the search parameters
-    const searchResults = movies.filter((movie) => {
-      // Check if movie matches the specified parameters
-      return (
-        (!title || movie.title.toLowerCase().includes(title.toLowerCase())) &&
-        (!releaseYears || releaseYears.includes(movie.releaseYear)) &&
-        (!genres ||
-          genres.some(
-            (genre) => movie.genre.toLowerCase() === genre.toLowerCase()
-          )) &&
-        (!rating || movie.averageRating >= rating) &&
-        (!tags || tags.some((tag) => movie.tags.includes(tag))) &&
-        (!cast || cast.some((actor) => movie.actors.includes(actor)))
-      );
-    });
+    
+    const releaseYears = releaseYear ? releaseYear.split(',') : [];
+    const directorsList = directors ? directors.split(',') :[];
+    const genres = genre ? genre.split(',') : [];
+    const castList = cast ? cast.split(',') : [];
+    const tags = tag ? tag.split(',') : [];
+   
+    let query = 'SELECT * FROM "MOVIE" WHERE TRUE';
+
+    if (movieIDs && movieIDs.length > 0) {
+      query += ` AND "id" = ANY(ARRAY[${movieIDs}])`;
+      console.log("movieIDs: ", movieIDs);
+    }
+
+    if (title) {
+      query += ` AND LOWER("title") LIKE LOWER('%${title}%')`;
+      console.log("title: ", title);
+    }
+
+    if (releaseYears && releaseYears.length > 0) {
+      query += ` AND "releaseDate" = ANY(ARRAY[${releaseYears}])`;
+      console.log("releaseYears:",releaseYears)
+    }
+
+    if (directorsList && directorsList.length >0) {
+      query += ` AND ARRAY(SELECT unnest("directors")) @> ARRAY[${directorsList.map(director => `'${director}'`).join(', ')}]`
+      console.log("director: ", directorsList);
+    }
+
+    if (castList && castList.length > 0) {
+      query += ` AND ARRAY(SELECT lower(unnest("actors"))) @> ARRAY[${castList.map(actor => `'${actor}'`).join(', ')}]`
+      console.log("actors: ", castList);
+    }
+
+    if (genres && genres.length > 0) {
+      query += ` AND ARRAY(SELECT lower(unnest("genre"))) @> ARRAY[${genres.map(genre => `'${genre}'`).join(', ')}]`
+    }
+
+    if (rating) {
+      query += ` AND "averageRating" >= ${rating}`;
+      console.log("rating ", rating)
+    }
+
+    if (tags && tags.length > 0) {
+      query += ` AND ARRAY(SELECT lower(unnest("tags"))) @> ARRAY[${tags.map(tag => `'${tag}'`).join(', ')}]`
+      console.log("tags: ",tags);
+    }
+
+    console.log("query: ", query);
+    const client = await pool.connect();
+    const { rows } = await client.query(query);
+    client.release();
+
+    const searchResults = rows.map(row => new Movie(
+      row.id,
+      row.title,
+      row.genre,
+      row.directors,
+      row.actors,
+      row.content,
+      row.releaseDate,
+      row.averageRating,
+      row.sdRating,
+      row.ratingCount,
+      row.tags,
+      row.poster
+    ));
+    
     return searchResults;
   } catch (error) {
     console.error("Error searching movies:", error);
@@ -85,50 +132,42 @@ async function searchMovies(title, releaseYears, cast, genres, rating, tags) {
   }
 }
 
-async function getMoviesByGenre(genre) {
-  try {
-    // Fetch movies by this genre
-    const movie = new Movie();
-    return movie;
-  } catch (error) {
-    throw new Error("Failed to fetch movies");
-  }
-}
+async function getMoviesOfDirectors(directors)
+{
 
-async function getMoviesByDirector(director) {
-  try {
-    // Fetch movies by this director
-    const movie = new Movie();
-    return movie;
-  } catch (error) {
-    throw new Error("Failed to fetch movies");
-  }
-}
+    const uniqueMovieIds = new Set();
+    directors.forEach(director => {
+      director.movieIds.forEach(movieId => {
+        uniqueMovieIds.add(movieId);
+      });
+    });
+    
+    // Convert the Set back to an array if needed
+    const uniqueMovieIdsArray = Array.from(uniqueMovieIds);
+    console.log(uniqueMovieIdsArray)
+    const searchResults = await searchMovies(uniqueMovieIdsArray, null, null, null, null, null, null, null);
+    return searchResults;
 
-async function getMoviesByTags(tags) {
-  try {
-    // Fetch movies by these tags
-    const movie = new Movie();
-    return movie;
-  } catch (error) {
-    throw new Error("Failed to fetch movies");
-  }
 }
 
 async function getTags() {
   try {
-    // Fetch all tags
-    const movie = new Array("Funny");
-    return movie;
+    // Example: Fetch all users from the database
+    const client = await pool.connect();
+    const result = await client.query('SELECT DISTINCT unnest("tags") AS tag FROM "MOVIE"');
+    client.release();
+    
+    const tags = result.rows.map(row => row.tag);
+    return tags;
   } catch (error) {
-    throw new Error("Failed to fetch movies");
+    throw new Error("Failed to fetch tags");
   }
 }
 
 module.exports = {
   getMovies,
-  getSoonReleasedMovies,
-  getMoviesByDirector,
-  getMoviesByGenre,
   searchMovies,
+  sortMovies,
+  getMoviesOfDirectors,
+  getTags,
 };

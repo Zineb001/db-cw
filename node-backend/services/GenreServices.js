@@ -2,61 +2,34 @@ const Movie = require("../models/Movie");
 const Director = require("../models/Director");
 const Genre = require("../models/Genre");
 
-async function getGenres() {
+const express = require('express');
+const cors = require('cors');
+const { Pool } = require('pg');
+
+
+const pool = new Pool({
+  user: 'postgres',
+  host: 'postgres', // This should match the service name in docker-compose.yml
+  database: 'coursework',
+  password: 'mysecretpassword',
+  port: 5432,
+});
+
+async function getGenreNames() {
   try {
     // Fetch genres
-    const genres = new Genre();
-    return genres;
+    const client = await pool.connect();
+    const result = await client.query('SELECT name FROM "GENRE"'); // Only select the name column
+    client.release();
+    
+    const genreNames = result.rows.map(row => row.name);
+
+    return genreNames;
   } catch (error) {
     throw new Error("Failed to fetch genres");
-  }
-}
-
-async function getMostPolarizedGenres() {
-  try {
-    // Filter genres by sdRating
-    const genres = getGenres();
-
-    return genres;
-  } catch (error) {
-    throw new Error("Failed to fetch genres");
-  }
-}
-
-async function getMostPopularGenres() {
-  try {
-    // Filter genres by averageRating
-    const genres = getGenres();
-    return genres;
-  } catch (error) {
-    throw new Error("Failed to fetch genres");
-  }
-}
-
-async function getMostReviewedGenres() {
-  try {
-    // Filter genres by reviewsCount
-    const genres = getGenres();
-    return genres;
-  } catch (error) {
-    throw new Error("Failed to fetch genres");
-  }
-}
-
-async function getRatingDataByGenre(genre) {
-  try {
-    // Filter genres by reviewsCount
-    const genres = getGenres();
-    return genres;
-  } catch (error) {
-    throw new Error("Failed to fetch data");
   }
 }
 
 module.exports = {
-  getGenres,
-  getMostPolarizedGenres,
-  getMostPopularGenres,
-  getMostReviewedGenres,
-  getRatingDataByGenre,
+  getGenreNames,
 };

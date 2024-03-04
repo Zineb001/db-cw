@@ -1,5 +1,6 @@
 class Director {
-  constructor(name, movieIds = []) {
+  constructor(id,name, movieIds = []) {
+    this.id = id;
     this.name = name;
     this.movieIds = movieIds; // List of movie IDs directed by this director
   }

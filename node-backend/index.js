@@ -2,15 +2,25 @@ const express = require('express');
 const cors = require('cors');
 const { Pool } = require('pg');
 
+const movieRoutes = require("./routes/MovieRoutes");
+const genreRoutes = require("./routes/GenreRoutes");
+const actorRoutes = require("./routes/ActorRoutes");
+const directorRoutes = require("./routes/DirectorRoutes");
+
+
 const app = express();
 const port = 3001; // Ensure this matches the port in your docker-compose.yml
 app.use(cors());
-
+app.set('query parser', false);
+app.use("/api", movieRoutes);
+app.use("/api", genreRoutes);
+app.use("/api", actorRoutes);
+app.use("/api", directorRoutes);
 // Set up the PostgreSQL client
 const pool = new Pool({
   user: 'postgres',
   host: 'postgres', // This should match the service name in docker-compose.yml
-  database: 'hello_world_db',
+  database: 'coursework',
   password: 'mysecretpassword',
   port: 5432,
 });
