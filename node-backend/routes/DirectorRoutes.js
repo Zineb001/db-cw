@@ -3,5 +3,5 @@ const router = express.Router();
 const DirectorController = require("../controllers/DirectorController");
 
 // Define route for retrieving users
-router.get("/directors", DirectorController.getDirectors);
+router.get("/directorsNames", DirectorController.getDirectors);
 module.exports = router;
