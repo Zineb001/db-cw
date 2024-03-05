@@ -10,7 +10,7 @@ CREATE TABLE "MOVIE" (
   "sdRating" FLOAT,
   "ratingCount" INT,
   "tags" TEXT[],
-  "poster" BYTEA
+  "poster" VARCHAR(225)
 );
 
 CREATE TABLE "DIRECTOR" (
@@ -40,6 +40,13 @@ CREATE TABLE "PERSONALITYTRAIT" (
 );
 
 CREATE TABLE "USER" (
-  "userID" VARCHAR(50),
+  "id" VARCHAR(50),
+  "averageRating" FLOAT
+);
 
+CREATE TABLE "RATING" (
+  "id" INT,
+  "movieID" INT,
+  "userID" INT,
+  "RATING" INT
 );
