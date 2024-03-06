@@ -1,0 +1,24 @@
+import * as React from "react";
+const MovieListComponent = React.memo(({ movies }) => {
+    console.log('Received movies:', movies);
+
+    return (
+        <div>
+          {movies.map((movie) => (
+            <div key={movie.id}>
+              <h2>{movie.title}</h2>
+              <p>Genre: {movie.genre.join(', ')}</p>
+              <p>Actors: {movie.actors.join(', ')}</p>
+              <p>Description: {movie.content}</p>
+              <p>Release Year: {movie.releaseYear}</p>
+              <p>Rating: {movie.averageRating}</p>
+              <p>Tags: {movie.tags.join(', ')}</p>
+              <img src={movie.poster}/>
+            </div>
+          ))}
+        </div>
+      );
+});
+
+export default MovieListComponent;
+  

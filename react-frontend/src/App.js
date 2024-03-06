@@ -1,24 +1,25 @@
-import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import { ThemeProvider } from 'styled-components';
+import theme from './theme/theme';
+import HomePage from './components/HomePage';
+import SearchMovie from './components/SearchMovie';
+import FutureReleases from './components/FutureReleases';
+import DiscoverGenres from './components/DiscoverGenres';
+
 
 function App() {
-  const [message, setMessage] = useState('');
-
-  useEffect(() => {
-    fetch('http://localhost:3001/message') // Update to match your backend URL
-      .then(response => response.json())
-      .then(data => setMessage(data.text))
-      .catch(error => console.error('Error fetching data: ', error));
-  }, []);
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <p>
-          Message from the server: {message}
-        </p>
-      </header>
-    </div>
+    <ThemeProvider theme={theme}>
+      <Router>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/search-movie" element={<SearchMovie />} />
+          <Route path="/future-releases" element={<FutureReleases />} />
+          <Route path="discover-genres" element={<DiscoverGenres />} />
+        </Routes>
+      </Router>
+    </ThemeProvider>
   );
 }
-
 export default App;
