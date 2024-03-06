@@ -11,14 +11,15 @@ const mockedJSON = `[
     "id": "1",
     "title": "Chungking Express",
     "genre": ["Comedy", "Crime", "Drama"],
+    "directors": ["A", "B", "C"]
     "actors": ["Brigitte Lin", "Takeshi Kaneshiro", "Tony Leung Chiu-wai"],
     "content": "Two melancholic Hong Kong policemen fall in love: one with a mysterious female underworld figure, the other with a beautiful and ethereal waitress at a late-night restaurant he frequents.",
-    "releaseYear": "1996",
+    "releaseDate": "1996",
     "averageRating": "8.0",
     "sdRating": "1.2",
     "ratingCount": "100000",
     "tags": ["New Wave", "Romantic", "Cult Film"],
-    "poster": "https://m.media-amazon.com/images/M/MV5BNmEyYzUwYTMtYTNiNS00YWE4LWIxZTEtNTVlZDBlNmQ4NGE2XkEyXkFqcGdeQXVyMjUzOTY1NTc@._V1_SX300.jpg"
+    "poster": "https://m.media-amazon.com/images/M/MV5BYWVjNjMwZTgtMGYyYy00NmVhLWE1NDItMzFhMmJkYTNjYWIwXkEyXkFqcGdeQXVyNjU0OTQ0OTY@._V1_SX300.jpg"
   },
   {
     "id": "2",
@@ -138,8 +139,7 @@ function SearchMovie() {
     searchInputRef.current.blur();}
   };
 
-
-  useEffect(() => {
+  /* useEffect(() => {
     if (searchTimeoutRef.current) {
       clearTimeout(searchTimeoutRef.current);
     }
@@ -149,6 +149,51 @@ function SearchMovie() {
       const mockedData = JSON.parse(mockedJSON);
       console.log('Fetched movies from backend');
       setMovies(mockedData);
+
+      setIsLoading(false);
+    }, 500);
+
+    return () => {
+      if (searchTimeoutRef.current) {
+        clearTimeout(searchTimeoutRef.current);
+      }
+    };
+  }, [searchTerm, filters]); */
+
+  useEffect(() => {
+    if (searchTimeoutRef.current) {
+      clearTimeout(searchTimeoutRef.current);
+    }
+    setIsLoading(true);
+    searchTimeoutRef.current = setTimeout(() => {
+      const apiUrl = `http://localhost:3001/api/searchMovies`;
+      let queryString = `?title=${encodeURIComponent(searchTerm)}`;
+      const filterKeys = ['releaseYear', 'directors', 'cast', 'genres', 'rating', 'tags'];
+
+      filterKeys.forEach(key => {
+        const value = filters[key];
+        queryString += `&${key}=`;
+        if (Array.isArray(value) && value.length > 0) {
+          queryString += value.map(item => encodeURIComponent(item)).join(',');
+        }
+      });
+
+      fetch(apiUrl + queryString, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      .then(response => response.json())
+      .then(data => {
+        setMovies(data);
+        setIsLoading(false);
+      })
+      .catch(error => {
+        console.error('Error fetching movies:', error);
+        setIsLoading(false);
+      });
+      console.log("Request URL:", apiUrl + queryString);
       setIsLoading(false);
     }, 500);
 
@@ -158,7 +203,7 @@ function SearchMovie() {
       }
     };
   }, [searchTerm, filters]);
-
+    
   return (
     <>
       <NavBar>
