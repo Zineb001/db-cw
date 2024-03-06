@@ -164,10 +164,25 @@ async function getTags() {
   }
 }
 
+async function getMovieRecommendations() {
+  try {
+    const client = await pool.connect();
+    const query = ""
+    const result = await client.query(query);
+    client.release();
+    
+    const tags = result.rows.map(row => row.tag);
+    return tags;
+  } catch (error) {
+    throw new Error("Failed to fetch movie recommendations");
+  }
+}
+
 module.exports = {
   getMovies,
   searchMovies,
   sortMovies,
   getMoviesOfDirectors,
   getTags,
+  getMovieRecommendations,
 };

@@ -1,7 +1,7 @@
 class User {
-  constructor(userID, movieRatings = []) {
+  constructor(userID, averageRating) {
     this.userID = userID;
-    this.movieRatings = movieRatings; // Initialize movieRatings as an empty array of tuples (movie_id, rating, tag)
+    this.averageRating = averageRating;
   }
 }
 module.exports = User;

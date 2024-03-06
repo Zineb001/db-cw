@@ -48,5 +48,5 @@ CREATE TABLE "RATING" (
   "id" INT,
   "movieID" INT,
   "userID" INT,
-  "RATING" INT
+  "RATING" FLOAT
 );
