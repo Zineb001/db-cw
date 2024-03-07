@@ -14,18 +14,17 @@ async function getMovies(req, res) {
   }
 }
 
-
 async function searchMovies(req, res) {
   try {
     //for testing: /api/searchMovies?title=&releaseYear=&cast=&genre=&rating=2&tags=
-    const { title, releaseYear, directors, cast, genre, rating, tags } = req.query;
+    const { title, releaseYear, directors, cast, genres, rating, tags } = req.query;
     const searchResults = await movieService.searchMovies(
       null,
       title,
       releaseYear,
       directors,
       cast,
-      genre,
+      genres,
       rating,
       tags
     );

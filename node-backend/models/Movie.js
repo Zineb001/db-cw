@@ -24,7 +24,7 @@ class Movie {
     this.sdRating = sdRating;
     this.ratingCount = ratingCount;
     this.tags = tags;
-    this.poster = poster;
+    this.poster = poster
   }
 }
 

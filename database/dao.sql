@@ -10,8 +10,8 @@ CREATE TABLE "MOVIE" (
   "sdRating" FLOAT,
   "ratingCount" INT,
   "tags" TEXT[],
-  "poster" VARCHAR(225)
-);
+  "poster" VARCHAR(255)
+); 
 
 CREATE TABLE "DIRECTOR" (
   "id" INT,

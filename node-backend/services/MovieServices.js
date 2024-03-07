@@ -81,27 +81,28 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
       console.log("releaseYears:",releaseYears)
     }
 
-    if (directorsList && directorsList.length >0) {
-      query += ` AND ARRAY(SELECT unnest("directors")) @> ARRAY[${directorsList.map(director => `'${director}'`).join(', ')}]`
+    if (directorsList && directorsList.length > 0) {
+      query += ` AND ARRAY(SELECT unnest("directors")) && ARRAY[${directorsList.map(director => `'${director}'`).join(', ')}]`;
       console.log("director: ", directorsList);
     }
 
     if (castList && castList.length > 0) {
-      query += ` AND ARRAY(SELECT lower(unnest("actors"))) @> ARRAY[${castList.map(actor => `'${actor}'`).join(', ')}]`
+      query += ` AND ARRAY(SELECT unnest("actors")) && ARRAY[${castList.map(actor => `'${actor}'`).join(', ')}]`
       console.log("actors: ", castList);
     }
 
     if (genres && genres.length > 0) {
-      query += ` AND ARRAY(SELECT lower(unnest("genre"))) @> ARRAY[${genres.map(genre => `'${genre}'`).join(', ')}]`
+      query += ` AND ARRAY(SELECT unnest("genre")) && ARRAY[${genres.map(genre => `'${genre}'`).join(', ')}]`
+      console.log("genres:", genres)
     }
 
     if (rating) {
-      query += ` AND "averageRating" >= ${rating}`;
+      query += ` AND "averageRating" BETWEEN ${rating} AND ${parseFloat(rating) + 0.9}`;
       console.log("rating ", rating)
     }
 
     if (tags && tags.length > 0) {
-      query += ` AND ARRAY(SELECT lower(unnest("tags"))) @> ARRAY[${tags.map(tag => `'${tag}'`).join(', ')}]`
+      query += ` AND ARRAY(SELECT lower(unnest("tags"))) && ARRAY[${tags.map(tag => `'${tag}'`).join(', ')}]`
       console.log("tags: ",tags);
     }
 
@@ -122,7 +123,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
       row.sdRating,
       row.ratingCount,
       row.tags,
-      row.poster
+      row.movies
     ));
     
     return searchResults;
