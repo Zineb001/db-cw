@@ -39,7 +39,7 @@ const ToggleButton = styled.button`
 const mockGenres = ["Action", "Comedy", "Drama"];
 const mockTags = ["New Release", "Classic", "Trending"];
 const mockCast = ["Actor A", "Actor B", "Actor C", "Actor D"];
-const mockDirectors = ["Director A", "Director B", "Director C", "Director D"];
+const mockDirectors = ["Christopher Nolan", "Director B", "Director C", "Director D"];
 
 const FilterComponent = ({ filters, setFilters }) => {
     const [genres, setGenres] = useState([]);

@@ -92,8 +92,12 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     }
 
     if (genres && genres.length > 0) {
+<<<<<<< HEAD
       query += ` AND ARRAY(SELECT unnest("genre")) && ARRAY[${genres.map(genre => `'${genre}'`).join(', ')}]`
       console.log("genres:", genres)
+=======
+      query += ` AND ARRAY(SELECT unnest("genre")) @> ARRAY[${genres.map(genre => `'${genre}'`).join(', ')}]`
+>>>>>>> a5e56a5fc0f367b373edcec5339a2b403e313ad0
     }
 
     if (rating) {
