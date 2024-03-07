@@ -44,6 +44,20 @@ CREATE TABLE "USER" (
   "averageRating" FLOAT
 );
 
+CREATE TABLE "PERSONALITYRATING"(
+  "userID" VARCHAR(50),
+  "personalityTraits" FLOAT[],
+  "movieID" INT,
+  "rating" FLOAT
+);
+
+CREATE TABLE "PERSONALITYGENRE"(
+  "userID" VARCHAR(50),
+  "personalityTraits" FLOAT[],
+  "genre" VARCHAR(50),
+  "rating" FLOAT
+);
+
 CREATE TABLE "RATING" (
   "id" INT,
   "movieID" INT,
