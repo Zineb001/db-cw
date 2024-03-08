@@ -165,15 +165,28 @@ async function getTags() {
   }
 }
 
-async function getMovieRecommendations() {
+async function getMovieRecommendations(given_movie_id) {
   try {
     const client = await pool.connect();
-    const query = ""
+    const query = `
+    SELECT DISTINCT m.id
+    FROM "MOVIE" m
+    JOIN "RATING" r1 ON r1."movieID" = m.id
+    JOIN "USER" u1 ON u1.id = r1."userID"
+    JOIN "RATING" r2 ON r2."userID" = r1."userID"
+    JOIN "MOVIE" m2 ON r2."movieID" = m2.id
+    JOIN "USER" u2 ON u2.id = r2."userID"
+    WHERE m.id != ${given_movie_id}
+    AND u1."averageRating" < 5
+    AND r1."rating" = 5
+    AND r1."rating" > u1."averageRating"
+    AND m2.id = ${given_movie_id}
+    AND r2."R=rating" > u2."averageRating"
+    `
     const result = await client.query(query);
     client.release();
-    
-    const tags = result.rows.map(row => row.tag);
-    return tags;
+    const movieIDs = result.rows.map(row => row.id);
+    return movieIDs;
   } catch (error) {
     throw new Error("Failed to fetch movie recommendations");
   }

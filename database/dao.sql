@@ -33,34 +33,33 @@ CREATE TABLE "ACTOR" (
   "movieIDs" INT[]
 );
 
-CREATE TABLE "PERSONALITYTRAIT" (
-  "trait" VARCHAR(50),
-  "avgRatingsPerGenre" FLOAT[], 
-  "avgRatingsPerMovie" FLOAT[],
-);
-
 CREATE TABLE "USER" (
   "id" VARCHAR(50),
   "averageRating" FLOAT
 );
 
-CREATE TABLE "PERSONALITYRATING"(
-  "userID" VARCHAR(50),
-  "personalityTraits" FLOAT[],
-  "movieID" INT,
-  "rating" FLOAT
+CREATE TABLE "PERSONALITY_MOVIE"(
+  "movie_id" VARCHAR(50),
+  "movie_title" VARCHAR(50),
+  "avg_openness" FLOAT,
+  "avg_agreeableness" FLOAT,
+  "avg_emotional_stability" FLOAT,
+  "avg_conscientiousness" FLOAT,
+  "avg_extraversion" FLOAT,
 );
 
-CREATE TABLE "PERSONALITYGENRE"(
-  "userID" VARCHAR(50),
-  "personalityTraits" FLOAT[],
+CREATE TABLE "PERSONALITY_GENRE"(
   "genre" VARCHAR(50),
-  "rating" FLOAT
+  "avg_openness" FLOAT,
+  "avg_agreeableness" FLOAT,
+  "avg_emotional_stability" FLOAT,
+  "avg_conscientiousness" FLOAT,
+  "avg_extraversion" FLOAT,
 );
 
 CREATE TABLE "RATING" (
   "id" INT,
   "movieID" INT,
   "userID" INT,
-  "RATING" FLOAT
+  "rating" FLOAT
 );

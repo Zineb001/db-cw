@@ -1,6 +1,7 @@
 const movieService = require("../services/MovieServices");
 const directorService = require("../services/DirectorServices");
 const Movie = require("../models/Movie");
+const { move } = require("../routes/MovieRoutes");
 
 
 // Controller function to handle GET request for users
@@ -67,7 +68,8 @@ async function getTags(req, res){
 
 async function getMovieRecommendations(req, res){
   try{
-    const movieRecommendationsResults = await movieService.getMovieRecommendations();
+    const {movieID } = req.query;
+    const movieRecommendationsResults = await movieService.getMovieRecommendations(movieID);
     res.json(movieRecommendationsResults)
   }
   catch(error)
