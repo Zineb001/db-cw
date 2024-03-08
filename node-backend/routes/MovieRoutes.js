@@ -5,6 +5,7 @@ const movieController = require("../controllers/MovieController");
 // Define route for retrieving users
 router.get("/movies", movieController.getMovies);
 router.get("/searchMovies", movieController.searchMovies);
+router.get("/getMovie", movieController.getMovieByID);
 router.get("/directorMovies", movieController.getMoviesOfSameDirector);
 router.get("/tags", movieController.getTags)
 router.get("/moviesRecommendations", movieController.getMovieRecommendations);

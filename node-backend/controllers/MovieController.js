@@ -78,11 +78,23 @@ async function getMovieRecommendations(req, res){
     res.status(500).json({ error: "Internal server error" });
   }
 }
-
+async function getMovieByID(req, res){
+  try{
+    const {movieID } = req.query;
+    const movieResult = await movieService.searchMovies(movieID, null, null, null, null, null, null, null);
+    res.json(movieResult)
+  }
+  catch(error)
+  {
+    console.error("Error fetching movie by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 module.exports = {
   getMovies,
   searchMovies,
   getMoviesOfSameDirector,
   getTags,
-  getMovieRecommendations
+  getMovieRecommendations,
+  getMovieByID,
 };

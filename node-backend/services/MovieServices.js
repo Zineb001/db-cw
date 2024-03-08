@@ -64,7 +64,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     const castList = cast ? cast.split(',') : [];
     const tags = tag ? tag.split(',') : [];
    
-    let query = 'SELECT * FROM "VIEW_MOVIE" WHERE TRUE';
+    let query = 'SELECT * FROM "MOVIE" WHERE TRUE';
 
     if (movieIDs && movieIDs.length > 0) {
       query += ` AND "id" = ANY(ARRAY[${movieIDs}])`;
@@ -187,7 +187,8 @@ async function getMovieRecommendations(given_movie_id) {
     const result = await client.query(query);
     client.release();
     const movieIDs = result.rows.map(row => row.id);
-    return movieIDs;
+    const movieResults = await searchMovies(movieIDs, null, null, null, null, null, null, null);
+    return movieResults;
   } catch (error) {
     throw new Error("Failed to fetch movie recommendations");
   }
