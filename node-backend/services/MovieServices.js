@@ -23,7 +23,7 @@ async function getMovies() {
   try {
     // Example: Fetch all users from the database
     const client = await pool.connect();
-    const result = await client.query('SELECT * FROM "MOVIE"');
+    const result = await client.query('SELECT * FROM "VIEW_MOVIE"');
     client.release();
 
     const movies = result.rows.map(row => {
@@ -64,7 +64,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     const castList = cast ? cast.split(',') : [];
     const tags = tag ? tag.split(',') : [];
    
-    let query = 'SELECT * FROM "MOVIE" WHERE TRUE';
+    let query = 'SELECT * FROM "VIEW_MOVIE" WHERE TRUE';
 
     if (movieIDs && movieIDs.length > 0) {
       query += ` AND "id" = ANY(ARRAY[${movieIDs}])`;
@@ -155,7 +155,7 @@ async function getTags() {
   try {
     // Example: Fetch all users from the database
     const client = await pool.connect();
-    const result = await client.query('SELECT DISTINCT unnest("tags") AS tag FROM "MOVIE"');
+    const result = await client.query('SELECT DISTINCT unnest("tags") AS tag FROM "VIEW_MOVIE"');
     client.release();
     
     const tags = result.rows.map(row => row.tag);
@@ -168,6 +168,9 @@ async function getTags() {
 async function getMovieRecommendations(given_movie_id) {
   try {
     const client = await pool.connect();
+    //given a movie_id, return other movie ids where the users,
+    //who have watched the given movie_id and rated it above their average rating
+    //also rated those movies above their average rating
     const query = `
     SELECT DISTINCT m.id
     FROM "MOVIE" m
@@ -177,11 +180,9 @@ async function getMovieRecommendations(given_movie_id) {
     JOIN "MOVIE" m2 ON r2."movieID" = m2.id
     JOIN "USER" u2 ON u2.id = r2."userID"
     WHERE m.id != ${given_movie_id}
-    AND u1."averageRating" < 5
     AND r1."rating" = 5
-    AND r1."rating" > u1."averageRating"
     AND m2.id = ${given_movie_id}
-    AND r2."R=rating" > u2."averageRating"
+    AND r2."rating" > u2."averageRating"
     `
     const result = await client.query(query);
     client.release();

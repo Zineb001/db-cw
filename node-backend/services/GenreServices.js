@@ -20,7 +20,7 @@ async function getGenres() {
 
       // Fetch genres
       const client = await pool.connect();
-      const result = await client.query('SELECT * FROM "GENRE"');
+      const result = await client.query('SELECT * FROM "VIEW_GENRE"');
       client.release();
       
       const genres = result.rows.map(row => {
@@ -44,7 +44,7 @@ async function getGenreNames() {
   try {
     // Fetch genres
     const client = await pool.connect();
-    const result = await client.query('SELECT name FROM "GENRE"'); // Only select the name column
+    const result = await client.query('SELECT name FROM "VIEW_GENRE"'); // Only select the name column
     client.release();
     
     const genreNames = result.rows.map(row => row.name);
