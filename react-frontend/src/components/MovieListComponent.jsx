@@ -8,12 +8,13 @@ const MovieListComponent = React.memo(({ movies }) => {
             <div key={movie.id}>
               <h2>{movie.title}</h2>
               <p>Genre: {movie.genre.join(', ')}</p>
+              <p>Directors: {movie.directors.join(', ')}</p>
               <p>Actors: {movie.actors.join(', ')}</p>
               <p>Description: {movie.content}</p>
-              <p>Release Year: {movie.releaseYear}</p>
+              <p>Release Year: {movie.releaseDate}</p>
               <p>Rating: {movie.averageRating}</p>
               <p>Tags: {movie.tags.join(', ')}</p>
-              <img src={movie.poster}/>
+              {/* <img src={movie.poster}/>*/}
             </div>
           ))}
         </div>

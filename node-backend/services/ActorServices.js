@@ -17,7 +17,7 @@ const pool = new Pool({
 async function getActors() {
   try {
     const client = await pool.connect();
-    const result = await client.query('SELECT DISTINCT "name" FROM "ACTOR"');
+    const result = await client.query('SELECT DISTINCT "name" FROM "VIEW_ACTOR"');
     client.release();
 
     const uniqueActorNames = result.rows.map(row => row.name);

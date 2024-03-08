@@ -23,7 +23,7 @@ async function getMovies() {
   try {
     // Example: Fetch all users from the database
     const client = await pool.connect();
-    const result = await client.query('SELECT * FROM "MOVIE"');
+    const result = await client.query('SELECT * FROM "VIEW_MOVIE"');
     client.release();
 
     const movies = result.rows.map(row => {
@@ -64,7 +64,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     const castList = cast ? cast.split(',') : [];
     const tags = tag ? tag.split(',') : [];
    
-    let query = 'SELECT * FROM "MOVIE" WHERE TRUE';
+    let query = 'SELECT * FROM "VIEW_MOVIE" WHERE TRUE';
 
     if (movieIDs && movieIDs.length > 0) {
       query += ` AND "id" = ANY(ARRAY[${movieIDs}])`;
@@ -81,27 +81,28 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
       console.log("releaseYears:",releaseYears)
     }
 
-    if (directorsList && directorsList.length >0) {
-      query += ` AND ARRAY(SELECT unnest("directors")) @> ARRAY[${directorsList.map(director => `'${director}'`).join(', ')}]`
+    if (directorsList && directorsList.length > 0) {
+      query += ` AND ARRAY(SELECT unnest("directors")) && ARRAY[${directorsList.map(director => `'${director}'`).join(', ')}]`;
       console.log("director: ", directorsList);
     }
 
     if (castList && castList.length > 0) {
-      query += ` AND ARRAY(SELECT lower(unnest("actors"))) @> ARRAY[${castList.map(actor => `'${actor}'`).join(', ')}]`
+      query += ` AND ARRAY(SELECT unnest("actors")) && ARRAY[${castList.map(actor => `'${actor}'`).join(', ')}]`
       console.log("actors: ", castList);
     }
 
     if (genres && genres.length > 0) {
-      query += ` AND ARRAY(SELECT lower(unnest("genre"))) @> ARRAY[${genres.map(genre => `'${genre}'`).join(', ')}]`
+      query += ` AND ARRAY(SELECT unnest("genre")) && ARRAY[${genres.map(genre => `'${genre}'`).join(', ')}]`
+      console.log("genres:", genres)
     }
 
     if (rating) {
-      query += ` AND "averageRating" >= ${rating}`;
+      query += ` AND "averageRating" BETWEEN ${rating} AND ${parseFloat(rating) + 0.9}`;
       console.log("rating ", rating)
     }
 
     if (tags && tags.length > 0) {
-      query += ` AND ARRAY(SELECT lower(unnest("tags"))) @> ARRAY[${tags.map(tag => `'${tag}'`).join(', ')}]`
+      query += ` AND ARRAY(SELECT lower(unnest("tags"))) && ARRAY[${tags.map(tag => `'${tag}'`).join(', ')}]`
       console.log("tags: ",tags);
     }
 
@@ -122,7 +123,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
       row.sdRating,
       row.ratingCount,
       row.tags,
-      row.poster
+      row.movies
     ));
     
     return searchResults;
@@ -154,7 +155,7 @@ async function getTags() {
   try {
     // Example: Fetch all users from the database
     const client = await pool.connect();
-    const result = await client.query('SELECT DISTINCT unnest("tags") AS tag FROM "MOVIE"');
+    const result = await client.query('SELECT DISTINCT unnest("tags") AS tag FROM "VIEW_MOVIE"');
     client.release();
     
     const tags = result.rows.map(row => row.tag);
@@ -164,10 +165,39 @@ async function getTags() {
   }
 }
 
+async function getMovieRecommendations(given_movie_id) {
+  try {
+    const client = await pool.connect();
+    //given a movie_id, return other movie ids where the users,
+    //who have watched the given movie_id and rated it above their average rating
+    //also rated those movies above their average rating
+    const query = `
+    SELECT DISTINCT m.id
+    FROM "MOVIE" m
+    JOIN "RATING" r1 ON r1."movieID" = m.id
+    JOIN "USER" u1 ON u1.id = r1."userID"
+    JOIN "RATING" r2 ON r2."userID" = r1."userID"
+    JOIN "MOVIE" m2 ON r2."movieID" = m2.id
+    JOIN "USER" u2 ON u2.id = r2."userID"
+    WHERE m.id != ${given_movie_id}
+    AND r1."rating" = 5
+    AND m2.id = ${given_movie_id}
+    AND r2."rating" > u2."averageRating"
+    `
+    const result = await client.query(query);
+    client.release();
+    const movieIDs = result.rows.map(row => row.id);
+    return movieIDs;
+  } catch (error) {
+    throw new Error("Failed to fetch movie recommendations");
+  }
+}
+
 module.exports = {
   getMovies,
   searchMovies,
   sortMovies,
   getMoviesOfDirectors,
   getTags,
+  getMovieRecommendations,
 };

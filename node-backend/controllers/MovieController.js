@@ -1,6 +1,7 @@
-const MovieService = require("../services/MovieServices");
-const DirectorService = require("../services/DirectorServices");
+const movieService = require("../services/MovieServices");
+const directorService = require("../services/DirectorServices");
 const Movie = require("../models/Movie");
+const { move } = require("../routes/MovieRoutes");
 
 
 // Controller function to handle GET request for users
@@ -14,23 +15,22 @@ async function getMovies(req, res) {
   }
 }
 
-
 async function searchMovies(req, res) {
   try {
     //for testing: /api/searchMovies?title=&releaseYear=&cast=&genre=&rating=2&tags=
-    const { title, releaseYear, directors, cast, genre, rating, tags } = req.query;
-    const searchResults = await MovieService.searchMovies(
+    const { title, releaseYear, directors, cast, genres, rating, tags } = req.query;
+    const searchResults = await movieService.searchMovies(
       null,
       title,
       releaseYear,
       directors,
       cast,
-      genre,
+      genres,
       rating,
       tags
     );
 
-    const sortedSearchResults = MovieService.sortMovies(searchResults);
+    const sortedSearchResults = movieService.sortMovies(searchResults);
     res.json(sortedSearchResults);
 
   } catch (error) {
@@ -43,9 +43,9 @@ async function getMoviesOfSameDirector(req, res) {
   try {
     //for testing: 
     const { movieID } = req.query;
-    const directors = await DirectorService.getDirectorsByMovieID(movieID);
-    const searchResults= await MovieService.getMoviesOfDirectors(directors);
-    const sortedSearchResults = MovieService.sortMovies(searchResults);
+    const directors = await directorService.getDirectorsByMovieID(movieID);
+    const searchResults= await movieService.getMoviesOfDirectors(directors);
+    const sortedSearchResults = movieService.sortMovies(searchResults);
     res.json(sortedSearchResults);
 
   } catch (error) {
@@ -56,7 +56,7 @@ async function getMoviesOfSameDirector(req, res) {
 
 async function getTags(req, res){
   try{
-    const tags = await MovieService.getTags();
+    const tags = await movieService.getTags();
     res.json(tags)
   }
   catch(error)
@@ -66,9 +66,23 @@ async function getTags(req, res){
   }
 }
 
+async function getMovieRecommendations(req, res){
+  try{
+    const {movieID } = req.query;
+    const movieRecommendationsResults = await movieService.getMovieRecommendations(movieID);
+    res.json(movieRecommendationsResults)
+  }
+  catch(error)
+  {
+    console.error("Error fetching movie recommendations:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 module.exports = {
   getMovies,
   searchMovies,
   getMoviesOfSameDirector,
   getTags,
+  getMovieRecommendations
 };

@@ -1,4 +1,4 @@
-CREATE TABLE "MOVIE" (
+CREATE TABLE "VIEW_MOVIE" (
   "id" INT,
   "title" VARCHAR(50),
   "genre" TEXT[], 
@@ -10,16 +10,16 @@ CREATE TABLE "MOVIE" (
   "sdRating" FLOAT,
   "ratingCount" INT,
   "tags" TEXT[],
-  "poster" VARCHAR(225)
-);
+  "poster" VARCHAR(255)
+); 
 
-CREATE TABLE "DIRECTOR" (
+CREATE TABLE "VIEW_DIRECTOR" (
   "id" INT,
   "name" VARCHAR(50),
   "movieIDs" INT[] 
 );
 
-CREATE TABLE "GENRE" (
+CREATE TABLE "VIEW_GENRE" (
   "name" VARCHAR(50),
   "averageRating" FLOAT,
   "sdRating" FLOAT,
@@ -27,26 +27,39 @@ CREATE TABLE "GENRE" (
   "releasesCount" INT
 );
 
-CREATE TABLE "ACTOR" (
+CREATE TABLE "VIEW_ACTOR" (
   "id" INT,
   "name" VARCHAR(50),
   "movieIDs" INT[]
 );
 
-CREATE TABLE "PERSONALITYTRAIT" (
-  "trait" VARCHAR(50),
-  "avgRatingsPerGenre" FLOAT[], 
-  "avgRatingsPerMovie" FLOAT[],
-);
-
-CREATE TABLE "USER" (
+CREATE TABLE "VIEW_USER_RATING" (
   "id" VARCHAR(50),
   "averageRating" FLOAT
 );
 
-CREATE TABLE "RATING" (
+CREATE TABLE "VIEW_PERSONALITY_MOVIE"(
+  "movie_id" VARCHAR(50),
+  "movie_title" VARCHAR(50),
+  "avg_openness" FLOAT,
+  "avg_agreeableness" FLOAT,
+  "avg_emotional_stability" FLOAT,
+  "avg_conscientiousness" FLOAT,
+  "avg_extraversion" FLOAT,
+);
+
+CREATE TABLE "VIEW_PERSONALITY_GENRE"(
+  "genre" VARCHAR(50),
+  "avg_openness" FLOAT,
+  "avg_agreeableness" FLOAT,
+  "avg_emotional_stability" FLOAT,
+  "avg_conscientiousness" FLOAT,
+  "avg_extraversion" FLOAT,
+);
+
+CREATE TABLE "VIEW_MOVIE_RATING" (
   "id" INT,
-  "movieID" INT,
-  "userID" INT,
-  "RATING" INT
+  "movie_id" INT,
+  "user_id" VARCHAR(50),
+  "rating" FLOAT
 );
