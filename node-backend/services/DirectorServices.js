@@ -19,7 +19,7 @@ async function getDirectorsByMovieID(movieID) {
     const client = await pool.connect();
     const query = `
       SELECT *
-      FROM "VIEW_DIRECTOR"
+      FROM VIEW_DIRECTOR
       WHERE ${movieID} = ANY("movieIDs")`;
 
     const { rows } = await pool.query(query);
@@ -34,7 +34,7 @@ async function getDirectorsByMovieID(movieID) {
 async function getDirectors() {
   try {
     const client = await pool.connect();
-    const query = 'SELECT DISTINCT "name" FROM "VIEW_DIRECTOR"';
+    const query = 'SELECT DISTINCT "name" FROM VIEW_DIRECTOR';
     const result = await client.query(query);
     client.release();
     const uniqueDirectorNames = result.rows.map(row => row.name);

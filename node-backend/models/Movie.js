@@ -6,10 +6,10 @@ class Movie {
     directors = [],
     actors = [],
     content,
-    releaseDate,
-    averageRating,
-    sdRating,
-    ratingCount,
+    releasedate,
+    averagerating,
+    sdrating,
+    ratingcount,
     tags = [],
     poster
   ) {
@@ -19,10 +19,10 @@ class Movie {
     this.directors = directors;
     this.actors = actors;
     this.content = content;
-    this.releaseDate = releaseDate;
-    this.averageRating = averageRating;
-    this.sdRating = sdRating;
-    this.ratingCount = ratingCount;
+    this.releasedate = releasedate;
+    this.averagerating = averagerating;
+    this.sdrating = sdrating;
+    this.ratingcount = ratingcount;
     this.tags = tags;
     this.poster = poster
   }

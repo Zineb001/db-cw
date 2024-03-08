@@ -23,7 +23,7 @@ async function getMovies() {
   try {
     // Example: Fetch all users from the database
     const client = await pool.connect();
-    const result = await client.query('SELECT * FROM "VIEW_MOVIE"');
+    const result = await client.query('SELECT * FROM VIEW_MOVIE');
     client.release();
 
     const movies = result.rows.map(row => {
@@ -51,7 +51,7 @@ async function getMovies() {
 
 function sortMovies(movies)
 {
-  movies.sort((a, b) => b.ratingCount - a.ratingCount);
+  movies.sort((a, b) => b.ratingcount - a.ratingcount);
   return movies;
 }
 
@@ -64,7 +64,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     const castList = cast ? cast.split(',') : [];
     const tags = tag ? tag.split(',') : [];
    
-    let query = 'SELECT * FROM "MOVIE" WHERE TRUE';
+    let query = 'SELECT * FROM VIEW_MOVIE WHERE TRUE';
 
     if (movieIDs && movieIDs.length > 0) {
       query += ` AND "id" = ANY(ARRAY[${movieIDs}])`;
@@ -77,7 +77,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     }
 
     if (releaseYears && releaseYears.length > 0) {
-      query += ` AND "releaseDate" = ANY(ARRAY[${releaseYears}])`;
+      query += ` AND "releasedate" = ANY(ARRAY[${releaseYears}])`;
       console.log("releaseYears:",releaseYears)
     }
 
@@ -92,12 +92,13 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     }
 
     if (genres && genres.length > 0) {
-      query += ` AND ARRAY(SELECT unnest("genre")) && ARRAY[${genres.map(genre => `'${genre}'`).join(', ')}]`
-      console.log("genres:", genres)
+      const genresString = genres.map(genre => `'${genre}'`).join(', ');
+      query += ` AND ARRAY(SELECT unnest("genre")::text) && ARRAY[${genresString}]`;
+      console.log("genres:", genres);
     }
 
     if (rating) {
-      query += ` AND "averageRating" BETWEEN ${rating} AND ${parseFloat(rating) + 0.9}`;
+      query += ` AND "averagerating" BETWEEN ${rating} AND ${parseFloat(rating) + 0.9}`;
       console.log("rating ", rating)
     }
 
@@ -118,10 +119,10 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
       row.directors,
       row.actors,
       row.content,
-      row.releaseDate,
-      row.averageRating,
-      row.sdRating,
-      row.ratingCount,
+      row.releasedate,
+      row.averagedating,
+      row.sdrating,
+      row.ratingcount,
       row.tags,
       row.movies
     ));
@@ -155,7 +156,7 @@ async function getTags() {
   try {
     // Example: Fetch all users from the database
     const client = await pool.connect();
-    const result = await client.query('SELECT DISTINCT unnest("tags") AS tag FROM "VIEW_MOVIE"');
+    const result = await client.query('SELECT DISTINCT unnest("tags") AS tag FROM VIEW_MOVIE');
     client.release();
     
     const tags = result.rows.map(row => row.tag);

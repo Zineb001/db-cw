@@ -1,10 +1,10 @@
 class Genre {
-  constructor(name, averageRating, sdRating, reviewsCount, releasesCount) {
+  constructor(name, averagerating, sdrating, reviewscount, releasescount) {
     this.name = name;
-    this.averageRating = averageRating;
-    this.sdRating = sdRating;
-    this.reviewsCount = reviewsCount;
-    this.releasesCount = releasesCount;
+    this.averagerating = averagerating;
+    this.sdrating = sdrating;
+    this.reviewscount = reviewscount;
+    this.releasescount = releasescount;
   }
 }
 

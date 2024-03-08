@@ -30,8 +30,8 @@ async function searchMovies(req, res) {
       tags
     );
 
-    const sortedSearchResults = movieService.sortMovies(searchResults);
-    res.json(sortedSearchResults);
+    movieService.sortMovies(searchResults);
+    res.json(searchResults);
 
   } catch (error) {
     console.error("Error searching movies:", error);
