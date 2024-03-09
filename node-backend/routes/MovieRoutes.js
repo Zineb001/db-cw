@@ -9,4 +9,5 @@ router.get("/getMovie", movieController.getMovieByID);
 router.get("/directorMovies", movieController.getMoviesOfSameDirector);
 router.get("/tags", movieController.getTags)
 router.get("/moviesRecommendations", movieController.getMovieRecommendations);
+router.get("/moviesDiscouragements", movieController.getMovieDiscouragements)
 module.exports = router;

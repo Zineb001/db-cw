@@ -78,6 +78,20 @@ async function getMovieRecommendations(req, res){
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+async function getMovieDiscouragements(req, res){
+  try{
+    const {movieID } = req.query;
+    const movieDiscouragementsResults = await movieService.getMovieDiscouragements(movieID);
+    res.json(movieDiscouragementsResults)
+  }
+  catch(error)
+  {
+    console.error("Error fetching movie recommendations:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
+
 async function getMovieByID(req, res){
   try{
     const {movieID } = req.query;
@@ -90,6 +104,8 @@ async function getMovieByID(req, res){
     res.status(500).json({ error: "Internal server error" });
   }
 }
+
+
 module.exports = {
   getMovies,
   searchMovies,
@@ -97,4 +113,5 @@ module.exports = {
   getTags,
   getMovieRecommendations,
   getMovieByID,
+  getMovieDiscouragements,
 };

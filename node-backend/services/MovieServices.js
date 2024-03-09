@@ -82,12 +82,12 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     }
 
     if (directorsList && directorsList.length > 0) {
-      query += ` AND ARRAY(SELECT unnest("directors")) && ARRAY[${directorsList.map(director => `'${director}'`).join(', ')}]`;
+      query += ` AND ARRAY(SELECT unnest("directors")::text) && ARRAY[${directorsList.map(director => `'${director}'`).join(', ')}]`;
       console.log("director: ", directorsList);
     }
 
     if (castList && castList.length > 0) {
-      query += ` AND ARRAY(SELECT unnest("actors")) && ARRAY[${castList.map(actor => `'${actor}'`).join(', ')}]`
+      query += ` AND ARRAY(SELECT unnest("actors")::text) && ARRAY[${castList.map(actor => `'${actor}'`).join(', ')}]`
       console.log("actors: ", castList);
     }
 
@@ -120,7 +120,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
       row.actors,
       row.content,
       row.releasedate,
-      row.averagedating,
+      row.averagerating,
       row.sdrating,
       row.ratingcount,
       row.tags,
@@ -174,16 +174,44 @@ async function getMovieRecommendations(given_movie_id) {
     //also rated those movies above their average rating
     const query = `
     SELECT DISTINCT m.id
-    FROM "MOVIE" m
-    JOIN "RATING" r1 ON r1."movieID" = m.id
-    JOIN "USER" u1 ON u1.id = r1."userID"
-    JOIN "RATING" r2 ON r2."userID" = r1."userID"
-    JOIN "MOVIE" m2 ON r2."movieID" = m2.id
-    JOIN "USER" u2 ON u2.id = r2."userID"
+    FROM VIEW_MOVIE m
+    JOIN VIEW_MOVIE_RATING r1 ON r1."movie_id" = m.id
+    JOIN VIEW_USER_RATING u1 ON u1.id = r1."user_id"
+    JOIN VIEW_MOVIE_RATING r2 ON r2."user_id" = r1."user_id"
+    JOIN VIEW_MOVIE m2 ON r2."movie_id" = m2.id
+    JOIN VIEW_USER_RATING u2 ON u2.id = r2."user_id"
     WHERE m.id != ${given_movie_id}
     AND r1."rating" = 5
     AND m2.id = ${given_movie_id}
-    AND r2."rating" > u2."averageRating"
+    AND r2."rating" > u2."averagerating"
+    `
+    const result = await client.query(query);
+    client.release();
+    const movieIDs = result.rows.map(row => row.id);
+    const movieResults = await searchMovies(movieIDs, null, null, null, null, null, null, null);
+    return movieResults;
+  } catch (error) {
+    throw new Error("Failed to fetch movie recommendations");
+  }
+}
+async function getMovieDiscouragements(given_movie_id) {
+  try {
+    const client = await pool.connect();
+    //given a movie_id, return other movie ids where the users,
+    //who have watched the given movie_id and rated it below their average rating
+    //also rated those movies above their average rating
+    const query = `
+    SELECT DISTINCT m.id
+    FROM VIEW_MOVIE m
+    JOIN VIEW_MOVIE_RATING r1 ON r1."movie_id" = m.id
+    JOIN VIEW_USER_RATING u1 ON u1.id = r1."user_id"
+    JOIN VIEW_MOVIE_RATING r2 ON r2."user_id" = r1."user_id"
+    JOIN VIEW_MOVIE m2 ON r2."movie_id" = m2.id
+    JOIN VIEW_USER_RATING u2 ON u2.id = r2."user_id"
+    WHERE m.id != ${given_movie_id}
+    AND r1."rating" = 5
+    AND m2.id = ${given_movie_id}
+    AND r2."rating" > u2."averagerating"
     `
     const result = await client.query(query);
     client.release();
@@ -202,4 +230,5 @@ module.exports = {
   getMoviesOfDirectors,
   getTags,
   getMovieRecommendations,
+  getMovieDiscouragements,
 };
