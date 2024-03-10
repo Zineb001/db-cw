@@ -1,15 +1,15 @@
 import * as React from "react";
-import theme from './theme';
-import { ThemeProvider } from '@emotion/react';
 import { Link } from 'react-router-dom';
+import { ThemeProvider } from '@mui/material/styles';
+import theme from './theme';
 import NavigationBar from './NavigationBar';
 
-function FutureReleases() {
+function PersonalityAnalysis() {
   return (
     <ThemeProvider theme={theme}>
     <NavigationBar />
     <div>
-      <h1>Future Releases</h1>
+      <h1>Personality Analysis</h1>
       <nav>
         <ul>
           <li><Link to="/">Home</Link></li>
@@ -24,4 +24,4 @@ function FutureReleases() {
   );
 }
 
-export default FutureReleases;
+export default PersonalityAnalysis;

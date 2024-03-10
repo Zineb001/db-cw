@@ -1,40 +1,6 @@
 import * as React from "react";
 import { useState, useEffect } from 'react';
-import styled from 'styled-components';
-
-const Panel = styled.div`
-  width: 300px; 
-  box-shadow: 2px 0 8px rgba(0,0,0,0.2);
-  padding: 20px;
-  box-sizing: border-box;
-  max-height: 100vh; 
-  overflow-y: auto; 
-  display: ${props => props.showFilters ? 'block' : 'none'}; 
-  margin-top: 10px; 
-  margin-right: 20px;
-`;
-
-const FilterButton = styled.button`
-  margin: 5px;
-  padding: 8px 12px;
-  background-color: ${props => props.selected ? "#4CAF50" : "#f0f0f0"};
-  color: ${props => props.selected ? "white" : "black"};
-  border: ${props => props.selected ? "2px solid #4CAF50" : "2px solid #ddd"};
-  cursor: pointer;
-
-  &:hover {
-    background-color: ${props => props.selected ? "#45a049" : "#e7e7e7"};
-  }
-`;
-
-const ToggleButton = styled.button`
-  z-index: 3;
-  margin: 5px;
-  width: 150px;
-  height: 40px;
-  padding: 8px 12px;
-  cursor: pointer;
-`;
+import './style.css';
 
 const mockGenres = ["Action", "Comedy", "Drama"];
 const mockTags = ["New Release", "Classic", "Trending"];
@@ -94,75 +60,69 @@ const FilterComponent = ({ filters, setFilters }) => {
     
     return (
         <>
-            <ToggleButton onClick={handleToggleFilters}>
+            <button className="toggleButton" onClick={handleToggleFilters}>
                 {showFilters ? "Hide Filters ▲" : "Show Filters ▼"}
-            </ToggleButton>
+            </button>
             {showFilters && (
-                <Panel showFilters={showFilters}>
+                <div className={`panel ${showFilters ? 'show' : ''}`}>
                     <div>
                         {isFilterSelected() && <button onClick={handleResetFilters}>Reset Filters</button>}
                         <h3>Genres</h3>
-                        {genres.map((genre) => (
-                            <FilterButton
-                                key={genre}
-                                onClick={() => handleToggleFilter('genres', genre)}
-                                selected={filters.genres.includes(genre)}
-                            >
+                        {genres.map((genre, index) => (
+                            <button
+                            className={`filterButton ${filters.genres.includes(genre) ? 'selected' : ''}`}
+                            key={index}
+                            onClick={() => handleToggleFilter('genres', genre)}>
                                 {genre}
-                            </FilterButton>
+                            </button>
                         ))}
                         <h3>Tags</h3>
-                        {tags.map((tag) => (
-                            <FilterButton
-                                key={tag}
-                                onClick={() => handleToggleFilter('tags', tag)}
-                                selected={filters.tags.includes(tag)}
-                            >
+                        {tags.map((tag, index) => (
+                            <button
+                            className={`filterButton ${filters.genres.includes(tag) ? 'selected' : ''}`}
+                            key={index}
+                            onClick={() => handleToggleFilter('tags', tag)}>
                                 {tag}
-                            </FilterButton>
+                            </button>
                         ))}
                         <h3>Cast</h3>
-                        {cast.map((actor) => (
-                            <FilterButton
-                                key={actor}
-                                onClick={() => handleToggleFilter('cast', actor)}
-                                selected={filters.cast.includes(actor)}
-                            >
+                        {cast.map((actor, index) => (
+                            <button
+                            className={`filterButton ${filters.genres.includes(actor) ? 'selected' : ''}`}
+                            key={index}
+                            onClick={() => handleToggleFilter('actors', actor)}>
                                 {actor}
-                            </FilterButton>
+                            </button>
                         ))}
                         <h3>Directors</h3>
-                        {directors.map((director) => (
-                            <FilterButton
-                                key={director}
-                                onClick={() => handleToggleFilter('directors', director)}
-                                selected={filters.directors.includes(director)}
-                            >
+                        {directors.map((director, index) => (
+                            <button
+                            className={`filterButton ${filters.genres.includes(director) ? 'selected' : ''}`}
+                            key={index}
+                            onClick={() => handleToggleFilter('directors', director)}>
                                 {director}
-                            </FilterButton>
+                            </button>
                         ))}
                         <h3>Release Year</h3>
-                        {years.map((year) => (
-                            <FilterButton
-                                key={year}
-                                onClick={() => handleToggleFilter('releaseYear', year)}
-                                selected={filters.releaseYear.includes(year)}
-                            >
+                        {years.map((year, index) => (
+                            <button
+                            className={`filterButton ${filters.genres.includes(year) ? 'selected' : ''}`}
+                            key={index}
+                            onClick={() => handleToggleFilter('years', year)}>
                                 {year}
-                            </FilterButton>
+                            </button>
                         ))}
                         <h3>Ratings</h3>
-                        {ratings.map((rating) => (
-                            <FilterButton
-                                key={rating}
-                                onClick={() => handleToggleFilter('rating', rating)}
-                                selected={filters.rating.includes(rating)}
-                            >
+                        {ratings.map((rating, index) => (
+                            <button
+                            className={`filterButton ${filters.genres.includes(rating) ? 'selected' : ''}`}
+                            key={index}
+                            onClick={() => handleToggleFilter('ratings', rating)}>
                                 {rating}
-                            </FilterButton>
+                            </button>
                         ))}
                     </div>
-                </Panel>
+                </div>
             )}
         </>
     );

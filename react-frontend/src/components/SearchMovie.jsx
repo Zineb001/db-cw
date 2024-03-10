@@ -1,10 +1,12 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
-import { theme } from '../theme/theme';
+import theme from './theme';
+import { ThemeProvider } from '@emotion/react';
 import styled from 'styled-components';
 import FilterComponent from './FilterComponent'
 import MovieListComponent from './MovieListComponent'
+import NavigationBar from './NavigationBar';
 
 const mockedJSON = `[
   {
@@ -62,31 +64,6 @@ const mockedJSON = `[
   }
 ]`;
 
-const NavBar = styled.nav`
-  background: ${({ theme }) => theme.colors.background};
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  padding: ${({ theme }) => theme.spacing.medium};
-
-  ul {
-    list-style: none;
-    display: flex;
-    justify-content: space-around;
-    margin: 0;
-    padding: 0;
-  }
-
-  li {
-    padding: ${({ theme }) => theme.spacing.small};
-  }
-
-  a {
-    color: ${({ theme }) => theme.colors.linkText};
-    text-decoration: none;
-    &:hover {
-      text-decoration: underline;
-    }
-  }
-`;
 
 const StyledSearchInput = styled.input`
   width: 100%; 
@@ -206,14 +183,8 @@ function SearchMovie() {
     
   return (
     <>
-      <NavBar>
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/search-movie">Search Movie</Link></li>
-          <li><Link to="/future-releases">Future Releases</Link></li>
-          <li><Link to="/discover-genres">Discover Genres</Link></li>
-        </ul>
-      </NavBar>
+      <ThemeProvider theme={theme}>
+      <NavigationBar />
       <form onSubmit={handleFormSubmit}>
         <StyledSearchInput
           type="text"
@@ -234,6 +205,7 @@ function SearchMovie() {
           {!isLoading && <MovieListComponent movies={movies} />}
         </ContentArea>
       </LayoutContainer>
+      </ThemeProvider>
     </>
   );
 }

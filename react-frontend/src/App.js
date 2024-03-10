@@ -5,6 +5,7 @@ import HomePage from './components/HomePage';
 import SearchMovie from './components/SearchMovie';
 import FutureReleases from './components/FutureReleases';
 import DiscoverGenres from './components/DiscoverGenres';
+import PersonalityAnalysis from './components/PersonalityAnalysis';
 
 
 function App() {
@@ -17,6 +18,7 @@ function App() {
           <Route path="/search-movie" element={<SearchMovie />} />
           <Route path="/future-releases" element={<FutureReleases />} />
           <Route path="discover-genres" element={<DiscoverGenres />} />
+          <Route path="personality-analysis" element={<PersonalityAnalysis />} />
         </Routes>
       </Router>
     </ThemeProvider>
