@@ -1,0 +1,84 @@
+/* filterComponents */
+.panel {
+    width: 300px;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    padding: 20px;
+    box-sizing: border-box;
+    max-height: 100vh;
+    overflow-y: auto;
+    display: none;
+    margin-top: 10px;
+    margin-right: 20px;
+  }
+  
+  .filterButton {
+    margin: 5px;
+    padding: 8px 12px;
+    background-color: #f0f0f0;
+    color: black;
+    border: 2px solid #ddd;
+    cursor: pointer;
+  }
+  
+  .filterButton.selected {
+    background-color: #4CAF50;
+    color: white;
+    border: 2px solid #4CAF50;
+  }
+  
+  .filterButton:hover {
+    background-color: #e7e7e7;
+  }
+  
+  .filterButton.selected:hover {
+    background-color: #45a049;
+  }
+  
+  .toggleButton {
+    z-index: 3;
+    margin: 5px;
+    width: 150px;
+    height: 40px;
+    padding: 8px 12px;
+    cursor: pointer;
+  }
+  
+  .styledSearchInput {
+    width: 100%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ddd;
+    box-sizing: border-box;
+  }
+  
+  .styledSearchInput:focus {
+    outline: none;
+    border-color: #ccc;
+  }
+
+  .layoutContainer {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .contentArea {
+    /* Define your content area styles here */
+    margin-top: 20px;
+    /* Adjust based on whether filters are shown or not if needed */
+    /* Add more styles as needed */
+  }
+
+  .appContainer {
+    display: flex;
+  }
+  
+  .filterSidebar {
+    width: 20%; /* Adjust the width as necessary */
+    min-width: 200px; /* Minimum width */
+  }
+  
+  .mainContent {
+    flex-grow: 1;
+  }
+  
+  
