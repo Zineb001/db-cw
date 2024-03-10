@@ -62,6 +62,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     const directorsList = directors ? directors.split(',') :[];
     const genres = genre ? genre.split(',') : [];
     const castList = cast ? cast.split(',') : [];
+    const ratings =  rating ? rating.split(',') : [];
     const tags = tag ? tag.split(',') : [];
    
     let query = 'SELECT * FROM VIEW_MOVIE WHERE TRUE';
@@ -98,7 +99,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     }
 
     if (rating) {
-      query += ` AND "averagerating" BETWEEN ${rating} AND ${parseFloat(rating) + 0.9}`;
+      query += ` AND "averagerating" BETWEEN ${parseFloat(ratings[0])} AND ${parseFloat(ratings[1])}`;
       console.log("rating ", rating)
     }
 
@@ -124,7 +125,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
       row.sdrating,
       row.ratingcount,
       row.tags,
-      row.movies
+      row.poster
     ));
     
     return searchResults;
@@ -136,17 +137,15 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
 
 async function getMoviesOfDirectors(directors)
 {
-
     const uniqueMovieIds = new Set();
     directors.forEach(director => {
-      director.movieIds.forEach(movieId => {
-        uniqueMovieIds.add(movieId);
+      director.movieids.forEach(movieid => {
+        uniqueMovieIds.add(movieid);
       });
     });
     
     // Convert the Set back to an array if needed
     const uniqueMovieIdsArray = Array.from(uniqueMovieIds);
-    console.log(uniqueMovieIdsArray)
     const searchResults = await searchMovies(uniqueMovieIdsArray, null, null, null, null, null, null, null);
     return searchResults;
 

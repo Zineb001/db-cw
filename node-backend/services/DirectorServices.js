@@ -16,15 +16,16 @@ const pool = new Pool({
 
 async function getDirectorsByMovieID(movieID) {
   try {
+
     const client = await pool.connect();
     const query = `
       SELECT *
       FROM VIEW_DIRECTOR
-      WHERE ${movieID} = ANY("movieIDs")`;
+      WHERE ${movieID} = ANY(movieids)`;
 
     const { rows } = await pool.query(query);
     client.release();
-    const directors = rows.map(row => new Director(row.id, row.name, row.movieIDs));
+    const directors = rows.map(row => new Director(row.id, row.name, row.movieids));
     return directors;
   } catch (error) {
     throw new Error("Failed to fetch director ID");

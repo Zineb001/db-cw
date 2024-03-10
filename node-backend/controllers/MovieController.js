@@ -45,7 +45,8 @@ async function getMoviesOfSameDirector(req, res) {
     const { movieID } = req.query;
     const directors = await directorService.getDirectorsByMovieID(movieID);
     const searchResults= await movieService.getMoviesOfDirectors(directors);
-    const sortedSearchResults = movieService.sortMovies(searchResults);
+    const updatedMoviesList = searchResults.filter(movie => movie.id != movieID);
+    const sortedSearchResults = movieService.sortMovies(updatedMoviesList);
     res.json(sortedSearchResults);
 
   } catch (error) {
