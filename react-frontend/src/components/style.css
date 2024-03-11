@@ -62,18 +62,15 @@
   }
   
   .contentArea {
-    /* Define your content area styles here */
     margin-top: 20px;
-    /* Adjust based on whether filters are shown or not if needed */
-    /* Add more styles as needed */
   }
 
   .appContainer {
     display: flex;
     flex-direction: row;
     align-items: flex-start;
-    flex-wrap: nowrap; /* Prevents items from wrapping */
-    overflow: auto; /* Adds scrolling to container if content overflows */
+    flex-wrap: nowrap;
+    overflow: auto; 
   }
   
   .filterSidebar {
@@ -108,3 +105,106 @@
   background-color: '#E0E0E0';
   max-height: 300px;
 }
+
+.MuiOutlinedInput-root .MuiOutlinedInput-notchedOutline {
+  border-color: white; /* default state */
+}
+
+.MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline {
+  border-color: #E0E0E0; /* hover state */
+}
+
+.MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline {
+  border-color: white; /* focused state */
+}
+
+
+/* charts discover genres */
+
+.chart-container {
+  display: flex;
+  justify-content: space-between;
+  padding-top: 100px;
+}
+
+.chart-area {
+  flex: 1;
+  max-width: 90%;
+  padding-left: 100px; 
+}
+
+.dropdown-area {
+  flex: 1;
+  max-width: 40%; 
+  padding-left: 200px;
+}
+
+.main-container {
+  display: flex; 
+  background-color: #333333; 
+  padding: 100px; 
+  gap: 20px;
+  padding-top: 50px;
+}
+
+.chart-container {
+  flex: 3; 
+  background-color:'#E0E0E0'; 
+  padding-left: 50px;
+
+}
+
+.menu-container {
+  background-color:'#E0E0E0'; 
+   
+}
+
+.menu-and-leaderboard-container {
+  flex: 1; 
+  display: flex;
+  flex-direction: column;
+  gap: 100px;
+  padding-left: 100px;
+  padding-top: 150px;
+}
+
+.leaderboard-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  background: #333333; 
+  border-radius: 8px;
+  padding: 20px;
+  gap: 10px;
+}
+
+.leaderboard-entry {
+  display: flex;
+  align-items: center;
+  width: 100%;
+  padding: 10px 20px;
+  border: 0px solid; 
+  border-radius: 8px; 
+}
+
+.leaderboard-entry.first {
+  background-color: gold;
+}
+
+.leaderboard-entry.second {
+  background-color: silver;
+}
+
+.leaderboard-entry.third {
+  background-color: #cd7f32;
+}
+
+.leaderboard-rank {
+  font-weight: bold;
+  margin-right: 10px;
+}
+
+.leaderboard-name {
+  flex-grow: 1; 
+}
+

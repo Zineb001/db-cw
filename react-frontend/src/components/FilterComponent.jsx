@@ -15,16 +15,13 @@ const FilterComponent = ({ filters, setFilters }) => {
     const [directors, setDirectors] = useState([]);
 
     useEffect(() => {
-        // This useEffect will run once, simulating fetching data from the backend
         setGenres(mockGenres);
         setTags(mockTags);
         setCast(mockCast);
         setDirectors(mockDirectors);
     }, []);
     
-  
-    //const years = Array.from({ length: 2030 - 1990 + 1 }, (_, i) => 1990 + i);
-    //const ratings = ['<1', '1', '2', '3', '4', '5'];
+
     const [startYear, setStartYear] = useState(null);
     const [endYear, setEndYear] = useState(null);
     const years = Array.from({ length: (2016 - 1926) + 1 }, (_, k) => k + 1926);
@@ -72,13 +69,6 @@ const FilterComponent = ({ filters, setFilters }) => {
           }
       };
 
-    
-    const handleToggleFilter = (filterCategory, selectedGenres) => {
-        const updatedFilters = { ...filters, [filterCategory]: selectedGenres };
-        setFilters(updatedFilters);
-        console.log("Updated Filters:", updatedFilters);
-      };
-
     const handleResetFilters = () => {
         const resetFilters = {
             genres: [],
@@ -104,7 +94,7 @@ const FilterComponent = ({ filters, setFilters }) => {
                         {isFilterSelected() && <button onClick={handleResetFilters}>Reset Filters</button>}
                         <h3>Genres</h3>
                         <FormControl sx={{ m: 1, width: 300 }}>
-                        <InputLabel id="genres-dropdown">Genres</InputLabel>
+                        <InputLabel id="genres-dropdown" variant="standard">Genres</InputLabel>
                         <Select
                             labelId="genres-dropdown-label"
                             id="genres-dropdown"
@@ -113,6 +103,25 @@ const FilterComponent = ({ filters, setFilters }) => {
                             onChange={(e) => handleChange('genres', e)}
                             input={<OutlinedInput label="Genres" />}
                             renderValue={(selected) => selected.join(', ')}
+                            MenuProps={{
+                                PaperProps: {
+                                  style: {
+                                    backgroundColor: '#E0E0E0', 
+                                    maxHeight: '300px', 
+                                  },
+                                },
+                              }}
+                              sx={{
+                                '.MuiInputBase-input': {
+                                  height: 'auto',
+                                  fontSize: '0.875rem',
+                                },
+                                '.MuiSelect-select': {
+                                  '&:focus': {
+                                    backgroundColor: '#E0E0E0', 
+                                  },
+                                },
+                              }}
                         >
                             {genres.map((genre) => (
                             <MenuItem key={genre} value={genre}>
