@@ -6,7 +6,7 @@ const movieRoutes = require("./routes/MovieRoutes");
 const genreRoutes = require("./routes/GenreRoutes");
 const actorRoutes = require("./routes/ActorRoutes");
 const directorRoutes = require("./routes/DirectorRoutes");
-
+const personalityRoutes = require("./routes/PersonalityRoutes");
 
 const app = express();
 const port = 3001; // Ensure this matches the port in your docker-compose.yml
@@ -16,6 +16,7 @@ app.use("/api", movieRoutes);
 app.use("/api", genreRoutes);
 app.use("/api", actorRoutes);
 app.use("/api", directorRoutes);
+app.use("/api", personalityRoutes);
 // Set up the PostgreSQL client
 const pool = new Pool({
   user: 'postgres',

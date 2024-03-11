@@ -98,10 +98,61 @@ async function getMostReleasedGenres() {
   }
 }
 
+async function getRecommendedGenres(givenGenresString) {
+  try {
+    const givenGenres = givenGenresString ? givenGenresString.split(',') : [];
+    //given a list of genres, go through users 
+    //and check if the movies of that list of genres (or at least contain it) are rated on average over that users average rating
+    //then go through that users movies and calculate averagerating for every genre they have watched and collect those which were above that users average rating
+    //go through all users like that and get the intersection of genres
+    const client = await pool.connect();
+    const query = `
+      WITH user_genre_ratings AS (
+        SELECT 
+            u.id AS user_id,
+            g.name AS genre_name,
+            u.averageRating AS user_average_rating,
+            AVG(mr.rating) AS avg_genre_rating
+        FROM 
+            VIEW_MOVIE m
+        JOIN 
+            UNNEST(m.genre) g_name ON true
+        JOIN 
+            VIEW_GENRE g ON g.name = g_name
+        JOIN 
+            VIEW_MOVIE_RATING mr ON m.id = mr.movie_id
+        JOIN 
+            VIEW_USER_RATING u ON mr.user_id = u.id
+        WHERE 
+            g.name = ANY(ARRAY[${givenGenres.map(genre => `'${genre}'`).join(',')}])
+        GROUP BY 
+            u.id, user_id, genre_name, u.averageRating
+        HAVING 
+            AVG(mr.rating) > u.averageRating
+    )
+    SELECT 
+        genre_name
+    FROM 
+        user_genre_ratings
+    GROUP BY 
+        genre_name
+    `
+    const result = await client.query(query);
+    client.release();
+    const genres = await getGenres();
+    console.log("recommended genres: ", result);
+   
+    return genres;
+  } catch (error) {
+    throw new Error("Failed to fetch most released genres");
+  }
+}
+
 module.exports = {
   getGenreNames,
   getMostPolarizedGenres,
   getBestRatedGenres,
   getMostReviewedGenres,
   getMostReleasedGenres,
+  getRecommendedGenres,
 };
