@@ -11,8 +11,8 @@ const MovieListComponent = React.memo(({ movies }) => {
               <p>Directors: {movie.directors.join(', ')}</p>
               <p>Actors: {movie.actors.join(', ')}</p>
               <p>Description: {movie.content}</p>
-              <p>Release Year: {movie.releaseDate}</p>
-              <p>Rating: {movie.averageRating}</p>
+              <p>Release Year: {movie.releasedate}</p>
+              <p>Rating: {movie.averagerating}</p>
               <p>Tags: {movie.tags.join(', ')}</p>
               {/* <img src={movie.poster}/>*/}
             </div>
