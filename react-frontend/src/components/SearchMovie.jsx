@@ -3,10 +3,10 @@ import { useState, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import theme from './theme';
 import { ThemeProvider } from '@emotion/react';
-import styled from 'styled-components';
 import FilterComponent from './FilterComponent'
 import MovieListComponent from './MovieListComponent'
 import NavigationBar from './NavigationBar';
+import './style.css';
 
 const mockedJSON = `[
   {
@@ -65,29 +65,6 @@ const mockedJSON = `[
 ]`;
 
 
-const StyledSearchInput = styled.input`
-  width: 100%; 
-  padding: 10px; 
-  margin: 10px 0; 
-  border: 1px solid #ddd; 
-  box-sizing: border-box;
-  &:focus {
-    outline: none; 
-    border-color: #ccc; 
-  }
-`;
-
-const LayoutContainer = styled.div`
-  display: flex;
-  flex-direction: row;
-`;
-
-const ContentArea = styled.div`
-  transition: margin-top 0.3s ease-in-out;
-  margin-top: ${props => props.showFilters ? '20px' : '0'};
-`;
-
-
 function SearchMovie() {
   const location = useLocation();
   const searchTimeoutRef = useRef(null);
@@ -103,7 +80,6 @@ function SearchMovie() {
     tags: [],
   });
   const [isLoading, setIsLoading] = useState(false); 
-  const [showFilters, setShowFilters] = useState(false);
 
   const handleSearchChange = (e) => {
     const value = e.target.value;
@@ -182,31 +158,32 @@ function SearchMovie() {
   }, [searchTerm, filters]);
     
   return (
-    <>
-      <ThemeProvider theme={theme}>
+    <ThemeProvider theme={theme}>
       <NavigationBar />
-      <form onSubmit={handleFormSubmit}>
-        <StyledSearchInput
-          type="text"
-          placeholder="Search for a movie..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          ref={searchInputRef} 
-        />
-      </form>
-      <LayoutContainer>
-        <FilterComponent 
-          filters={filters}
-          setFilters={setFilters}
-          setShowFilters={setShowFilters} 
-          showFilters={showFilters} 
-        />
-        <ContentArea showFilters={showFilters}>
-          {!isLoading && <MovieListComponent movies={movies} />}
-        </ContentArea>
-      </LayoutContainer>
-      </ThemeProvider>
-    </>
+      <div className="appContainer"> 
+        <div className="filterSidebar">
+          <FilterComponent 
+            filters={filters}
+            setFilters={setFilters}
+          />
+        </div>
+        <div className="mainContent">
+          <form onSubmit={handleFormSubmit}>
+            <input
+                className="styledSearchInput"
+                type="text"
+                placeholder="Search for a movie..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                ref={searchInputRef}
+            />
+          </form>
+          <div className="contentArea">
+            {!isLoading && <MovieListComponent movies={movies} />}
+          </div>
+        </div>
+      </div>
+    </ThemeProvider>
   );
 }
 
