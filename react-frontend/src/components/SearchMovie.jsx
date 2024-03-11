@@ -66,27 +66,52 @@ const mockedJSON = `[
 
 
 const StyledSearchInput = styled.input`
-  width: 100%; 
-  padding: 10px; 
-  margin: 10px 0; 
-  border: 1px solid #ddd; 
-  box-sizing: border-box;
+  width: ${(props) => props.theme.searchInput.width};
+  padding: ${(props) => props.theme.searchInput.padding};
+  margin: ${(props) => props.theme.searchInput.margin};
+  border: ${(props) => props.theme.searchInput.border} ${(props) => props.theme.colors.inputBorder};
+  background-color: ${(props) => props.theme.colors.background};
+  box-sizing: ${(props) => props.theme.searchInput.boxSizing};
+  display: block;
+
   &:focus {
-    outline: none; 
-    border-color: #ccc; 
+    outline: none;
+    border-color: ${(props) => props.theme.colors.inputBorderFocus}; 
   }
 `;
 
-const LayoutContainer = styled.div`
+const StyledForm = styled.form`
+  flex-grow: 1; 
+  margin-right: 10px;
+`;
+
+const LayoutWrapper = styled.div`
   display: flex;
-  flex-direction: row;
+  flex-direction: row; // Changed to row to lay out children side by side
+  align-items: flex-start; // Align items at the start of the flex container
+  width: 100%; // Ensure it takes the full viewport width
+  padding: 20px 0; // Adjusted padding for visual consistency
+`;
+
+const EmptyBlock = styled.div`
+  flex-grow: 1;
+`;
+
+const PageContainer = styled.div`
+  display: flex;
+  flex-direction: column; // Adjust to column to stack children vertically
+  align-items: center; // Center children horizontally
+  padding: 20px;
+  width: 100%; // Ensure it takes the full viewport width
 `;
 
 const ContentArea = styled.div`
+  flex-grow: 1;
+  margin: 0 350px; // Apply 350px margin to both left and right sides
+  margin-top: ${props => props.showFilters ? '0' : '0'}; // Adjust if needed
   transition: margin-top 0.3s ease-in-out;
-  margin-top: ${props => props.showFilters ? '20px' : '0'};
+  padding: 20px;
 `;
-
 
 function SearchMovie() {
   const location = useLocation();
@@ -182,31 +207,29 @@ function SearchMovie() {
   }, [searchTerm, filters]);
     
   return (
-    <>
-      <ThemeProvider theme={theme}>
-      <NavigationBar />
-      <form onSubmit={handleFormSubmit}>
-        <StyledSearchInput
-          type="text"
-          placeholder="Search for a movie..."
-          value={searchTerm}
-          onChange={handleSearchChange}
-          ref={searchInputRef} 
-        />
-      </form>
-      <LayoutContainer>
+    <PageContainer>
+      <LayoutWrapper>
         <FilterComponent 
-          filters={filters}
-          setFilters={setFilters}
-          setShowFilters={setShowFilters} 
-          showFilters={showFilters} 
-        />
+            filters={filters}
+            setFilters={setFilters}
+            setShowFilters={setShowFilters} 
+            showFilters={showFilters} 
+          />
+        <StyledForm onSubmit={handleFormSubmit}>
+          <StyledSearchInput
+            type="text"
+            placeholder="Search for a movie..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+            ref={searchInputRef} 
+          />
+        </StyledForm>
+        <EmptyBlock />
+      </LayoutWrapper>
         <ContentArea showFilters={showFilters}>
-          {!isLoading && <MovieListComponent movies={movies} />}
+            {!isLoading && <MovieListComponent movies={movies} />}
         </ContentArea>
-      </LayoutContainer>
-      </ThemeProvider>
-    </>
+    </PageContainer>
   );
 }
 
