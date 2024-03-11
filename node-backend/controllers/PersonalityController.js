@@ -12,7 +12,7 @@ async function getGenres(req, res) {
 
 async function getMovies(req, res) {
     try {
-      const movies = await personalityService.getGenres(); 
+      const movies = await personalityService.getMovies(); 
       res.json(movies); 
     } catch (error) {
       console.error(error);
