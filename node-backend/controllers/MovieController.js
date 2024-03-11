@@ -106,6 +106,18 @@ async function getMovieByID(req, res){
   }
 }
 
+async function getPredictedMovies(req, res){
+  try{
+    //const movieResult = await movieService.searchMovies([592, 2028, 5952, 588], null, null, null, null, null, null, null);
+    const movieResult = await movieService.getPredictedMovies();
+    res.json(movieResult)
+  }
+  catch(error)
+  {
+    console.error("Error fetching movie by ID:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+}
 
 module.exports = {
   getMovies,
@@ -115,4 +127,5 @@ module.exports = {
   getMovieRecommendations,
   getMovieByID,
   getMovieDiscouragements,
+  getPredictedMovies,
 };
