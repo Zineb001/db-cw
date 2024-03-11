@@ -64,7 +64,6 @@ const mockedJSON = `[
   }
 ]`;
 
-
 function SearchMovie() {
   const location = useLocation();
   const searchTimeoutRef = useRef(null);

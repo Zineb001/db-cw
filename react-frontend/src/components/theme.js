@@ -41,6 +41,10 @@ const theme = createTheme({
       },
     },
   },
+  
+  images: {
+    StarIcon:"https://cdn.builder.io/api/v1/image/assets/TEMP/ec1511b766fe935073d05a1de4df939d87c4657ec0a7def87da9850a68b5f01e?"
+  }
 
 });
 
