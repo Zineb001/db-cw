@@ -69,12 +69,10 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
 
     if (movieIDs && movieIDs.length > 0) {
       query += ` AND "id" = ANY(ARRAY[${movieIDs}])`;
-      console.log("movieIDs: ", movieIDs);
     }
 
     if (title) {
       query += ` AND LOWER("title") LIKE LOWER('%${title}%')`;
-      console.log("title: ", title);
     }
 
     if (releaseYears && releaseYears.length > 0) {
@@ -188,6 +186,7 @@ async function getMovieRecommendations(given_movie_id) {
     client.release();
     const movieIDs = result.rows.map(row => row.id);
     const movieResults = await searchMovies(movieIDs, null, null, null, null, null, null, null);
+    movieResults.sort((a, b) => b.ratingcount - a.ratingcount);
     return movieResults;
   } catch (error) {
     throw new Error("Failed to fetch movie recommendations");
@@ -198,7 +197,7 @@ async function getMovieDiscouragements(given_movie_id) {
     const client = await pool.connect();
     //given a movie_id, return other movie ids where the users,
     //who have watched the given movie_id and rated it below their average rating
-    //also rated those movies above their average rating
+    //also rated those movies below their average rating
     const query = `
     SELECT DISTINCT m.id
     FROM VIEW_MOVIE m
@@ -208,14 +207,15 @@ async function getMovieDiscouragements(given_movie_id) {
     JOIN VIEW_MOVIE m2 ON r2."movie_id" = m2.id
     JOIN VIEW_USER_RATING u2 ON u2.id = r2."user_id"
     WHERE m.id != ${given_movie_id}
-    AND r1."rating" = 5
+    AND r1."rating" <2
     AND m2.id = ${given_movie_id}
-    AND r2."rating" > u2."averagerating"
+    AND r2."rating" < u2."averagerating"
     `
     const result = await client.query(query);
     client.release();
     const movieIDs = result.rows.map(row => row.id);
     const movieResults = await searchMovies(movieIDs, null, null, null, null, null, null, null);
+    movieResults.sort((a, b) => b.ratingcount - a.ratingcount);
     return movieResults;
   } catch (error) {
     throw new Error("Failed to fetch movie recommendations");
