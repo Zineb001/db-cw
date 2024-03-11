@@ -222,25 +222,6 @@ async function getMovieDiscouragements(given_movie_id) {
   }
 }
 
-async function getPredictedRating(givenId) {
-  try {
-    // Example: Fetch all users from the database
-    const client = await pool.connect();
-    const query = `
-    SELECT *
-    FROM VIEW_MOVIE_RATING
-    `;
-    const result = await client.query(query);
-    console.log("result: ",)
-    const ratings = result.rows.map(row => row.rating);
-    const averageRating = ratings.reduce((total, rating) => total + rating, 0) / ratings.length;
-    client.release();
-    return averageRating;
-  } catch (error) {
-    throw new Error("Failed to predicted rating");
-  }
-}
-
 async function getPredictedMovies() {
   try {
     // Example: Fetch all users from the database
