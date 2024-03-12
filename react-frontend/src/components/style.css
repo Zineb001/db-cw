@@ -337,3 +337,21 @@
   background-color: #ffffff;
 }
 
+.personality-container {
+  display: flex;
+  align-items: center; 
+  background-color: #333333;
+  padding-top: 50px;
+  gap: 20px;
+  padding-bottom: 20;
+}
+.personality-menu-container {
+  flex: 1;
+  display: flex;
+  justify-content: center; 
+}
+.personality-histogram-container {
+  flex: 2; 
+  display: flex;
+  justify-content: center;
+}
