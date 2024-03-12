@@ -1,6 +1,6 @@
 import * as React from "react";
 import { useState, useEffect, useRef } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 import theme from './theme';
 import { ThemeProvider } from '@emotion/react';
 import FilterComponent from './FilterComponent'
@@ -68,7 +68,6 @@ const mockedJSON = `[
 function SearchMovie() {
   const location = useLocation();
   const searchTimeoutRef = useRef(null);
-  const searchInputRef = useRef(null);
   const [searchTerm, setSearchTerm] = useState(location.state?.query || ''); 
   const [movies, setMovies] = useState([])
   const [filters, setFilters] = useState({
@@ -84,12 +83,6 @@ function SearchMovie() {
   const handleSearchChange = (e) => {
     const value = e.target.value;
     setSearchTerm(value);
-  };
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-    if (searchInputRef.current) {
-    searchInputRef.current.blur();}
   };
 
   /* useEffect(() => {
@@ -148,7 +141,7 @@ function SearchMovie() {
       });
       console.log("Request URL:", apiUrl + queryString);
       setIsLoading(false);
-    }, 500);
+    }, 300);
 
     return () => {
       if (searchTimeoutRef.current) {
@@ -159,7 +152,7 @@ function SearchMovie() {
     
   return (
     <ThemeProvider theme={theme}>
-      <NavigationBar />
+        <NavigationBar searchTerm={searchTerm} handleSearchChange={handleSearchChange}/>
       <div className="appContainer"> 
         <div className="filterSidebar">
           <FilterComponent 
@@ -167,20 +160,8 @@ function SearchMovie() {
             setFilters={setFilters}
           />
         </div>
-        <div className="mainContent">
-          <form onSubmit={handleFormSubmit}>
-            <input
-                className="styledSearchInput"
-                type="text"
-                placeholder="Search for a movie..."
-                value={searchTerm}
-                onChange={handleSearchChange}
-                ref={searchInputRef}
-            />
-          </form>
-          <div className="contentArea">
-            {!isLoading && <MovieListComponent movies={movies} />}
-          </div>
+        <div className="contentArea">
+          {!isLoading && <MovieListComponent movies={movies} />}
         </div>
       </div>
     </ThemeProvider>
