@@ -222,6 +222,57 @@ async function getMovieDiscouragements(given_movie_id) {
   }
 }
 
+async function getPredictedMovies() {
+  try {
+    // Example: Fetch all users from the database
+    const client = await pool.connect();
+    const movieIds = [592, 2028, 5952, 588];
+    const query = `
+    SELECT * 
+    FROM VIEW_MOVIE 
+    WHERE id IN (${movieIds.join(',')})
+`;
+    const { rows } = await client.query(query);
+    const movies = rows.map(row => new Movie(
+        row.id,
+        row.title,
+        row.genre,
+        row.directors,
+        row.actors,
+        row.content,
+        row.releasedate,
+        row.averagerating,
+        row.sdrating,
+        row.ratingcount,
+        row.tags,
+        row.poster
+    ));
+
+    for(const movie of movies)
+    {
+      const query2 = `
+        WITH random_ratings AS (
+          SELECT 
+            rating
+          FROM VIEW_MOVIE_RATING
+          WHERE movie_id = $1
+          ORDER BY RANDOM()
+          LIMIT 20
+        )
+        SELECT 
+          AVG(rating) AS average_rating
+        FROM random_ratings;
+    `;
+    const predictedRatingResult = await client.query(query2, [movie.id]);
+    movie.averagerating = predictedRatingResult.rows[0].average_rating;
+    }
+    client.release();
+    return movies;
+  } catch (error) {
+    throw new Error("Failed to predicted movies");
+  }
+}
+
 module.exports = {
   getMovies,
   searchMovies,
@@ -230,4 +281,5 @@ module.exports = {
   getTags,
   getMovieRecommendations,
   getMovieDiscouragements,
+  getPredictedMovies,
 };
