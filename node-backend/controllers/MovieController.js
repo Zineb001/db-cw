@@ -119,6 +119,16 @@ async function getPredictedMovies(req, res){
   }
 }
 
+async function getTopMovies(req, res) {
+  try {
+    const movies = await movieService.getTopMovies();
+    res.json(movies);
+  } catch (error) {
+    console.error("Error fetching top movies:", error);
+    res.status(500).json({ error: "Failed to fetch top movies" });
+  }
+}
+
 module.exports = {
   getMovies,
   searchMovies,
@@ -128,4 +138,5 @@ module.exports = {
   getMovieByID,
   getMovieDiscouragements,
   getPredictedMovies,
+  getTopMovies,
 };
