@@ -253,19 +253,61 @@ export function GenrePieChart ({ genreData }) {
             '#C9CBCF',
           ],
           hoverOffset: 4,
+          cutout: '80%',
         },
       ],
     };
-    const options = {
+    const defaultOptions = {
+        maintainAspectRatio: true,
+        aspectRatio: 1,
         plugins: {
             legend: {
                 position: 'right',
             },
         },
-        radius: '120%', 
-        maintainAspectRatio: false,
+        layout: {
+            padding: {
+                left: 50,
+                right: 50,
+            },
+        },
     };
+      
 
   
-    return <Pie data={data} />;
+    return <Pie data={data} options={defaultOptions}/>;
+  };
+
+export const GenreHistogram = ({ data, selectedGenre }) => {
+    const genreData = data.find(genre => genre.genre === selectedGenre);
+  
+    const chartData = {
+      labels: ['Openness', 'Agreeableness', 'Emotional Stability', 'Conscientiousness', 'Extraversion'],
+      datasets: [
+        {
+          label: `${selectedGenre} Personality Traits`,
+          data: [
+            genreData.avg_openness,
+            genreData.avg_agreeableness,
+            genreData.avg_emotional_stability,
+            genreData.avg_conscientiousness,
+            genreData.avg_extraversion,
+          ],
+          backgroundColor: 'rgba(255, 99, 132, 0.2)',
+          borderColor: 'rgba(255, 99, 132, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+  
+    const options = {
+      scales: {
+        y: { 
+          beginAtZero: false, 
+          suggestedMin: 3, 
+          suggestedMax: 4, 
+        }
+      }
+    };
+    return <Bar data={chartData} options={options}/>;
   };

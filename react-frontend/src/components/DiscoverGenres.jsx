@@ -6,7 +6,7 @@ import theme from './theme';
 import './style.css';
 import NavigationBar from './NavigationBar';
 import { Select, MenuItem, FormControl, InputLabel, Box } from '@mui/material';
-import {PolarizingGenresHistogram, BestRatedGenresHistogram, MostReviewedGenresHistogram, MostReleasedGenresHistogram, PolarizingGenresLeaderboard, BestRatedGenresLeaderboard, MostReviewedGenresLeaderboard, MostReleasedGenresLeaderboard, GenrePieChart} from './Charts';
+import {PolarizingGenresHistogram, BestRatedGenresHistogram, MostReviewedGenresHistogram, MostReleasedGenresHistogram, PolarizingGenresLeaderboard, BestRatedGenresLeaderboard, MostReviewedGenresLeaderboard, MostReleasedGenresLeaderboard, GenrePieChart, GenreHistogram} from './Charts';
 
 function calculateRatingsByGenre(movies) {
   let genreStats = {};
@@ -52,6 +52,7 @@ function DiscoverGenres() {
   const [bestRatedGenres, setBestRatedGenres] =useState([]);;
   const [mostReviewedGenres, setMostReviewedGenres] = useState([]);;
   const [mostReleasedGenres, setMostReleasedGenres] = useState([]);;
+  const [personalityGenres, setPersonalityGenres] = useState([]);;
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -86,6 +87,10 @@ function DiscoverGenres() {
         const filteredMostReleasedGenreData = mostReleasedGenreData.filter(genre => genre.name !== "(no genres listed)");
         setMostReleasedGenres(filteredMostReleasedGenreData);
 
+        const personalityResponse = await fetch('http://localhost:3001/api/personalityGenres');
+        const personalityData = await personalityResponse.json();
+        const filteredPersonalityData = personalityData.filter(genre => genre.name !== "(no genres listed)");
+        setPersonalityGenres(filteredPersonalityData);
   
   
       } catch (error) {
@@ -133,6 +138,7 @@ function DiscoverGenres() {
         <p>Loading...</p>
       ) : (
         <>
+        <div className="vertical-stack">
           <div className="main-container">
             <div className="chart-container">
               {selectedChart === 'polarizing' && <PolarizingGenresHistogram genreNames={polarizingGenreNames} sdRatings={sdRatings} />}
@@ -173,8 +179,11 @@ function DiscoverGenres() {
               </div>
             </div>
           </div>
-          <div className="main-container">
-            <div  className="pie-menu-container ">
+          <div className="horizontal-layout">
+            <div className="pie-chart">
+              <GenrePieChart genreData={selectedGenreData}/>
+            </div>
+            <div  className="dropdown-menu">
               <Box sx={{ minWidth: 120, mx: 1 }}>
                 <FormControl variant="outlined" fullWidth>
                   <InputLabel sx={{ color: 'white' }} id="genre-select-label">Select Genre</InputLabel>
@@ -203,11 +212,11 @@ function DiscoverGenres() {
                 </FormControl>
               </Box>
             </div>
-            <div className="pie-container">
-            <h2 className="white-text">Genre Ratings Distribution</h2>
-              <GenrePieChart genreData={selectedGenreData} />
+            <div className="histogram">
+              <GenreHistogram data={personalityGenres} selectedGenre={selectedGenre} />
             </div>
           </div>
+        </div>
         </>
       )}
     </div>
