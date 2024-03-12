@@ -273,6 +273,39 @@ async function getPredictedMovies() {
   }
 }
 
+async function getTopMovies() {
+  try {
+    const client = await pool.connect();
+    const query = `
+      SELECT * FROM VIEW_MOVIE
+      ORDER BY averagerating DESC, ratingcount DESC
+      LIMIT 10;
+    `;
+    const result = await client.query(query);
+    client.release();
+
+    const movies = result.rows.map(row => new Movie(
+      row.id,
+      row.title,
+      row.genre,
+      row.directors,
+      row.actors,
+      row.content,
+      row.releasedate,
+      row.averagerating,
+      row.sdrating,
+      row.ratingcount,
+      row.tags,
+      row.poster
+    ));
+
+    return movies;
+  } catch (error) {
+    console.error("Error fetching top movies:", error);
+    throw new Error("Failed to fetch top movies");
+  }
+}
+
 module.exports = {
   getMovies,
   searchMovies,
@@ -282,4 +315,5 @@ module.exports = {
   getMovieRecommendations,
   getMovieDiscouragements,
   getPredictedMovies,
+  getTopMovies,
 };
