@@ -251,3 +251,89 @@
   gap: 20px; /* Adjust the gap between elements as needed */
   background-color: #333333;
 }
+
+/* movie details component */
+
+.detail-container {
+  display: flex;
+  flex-direction: column; /* Display as column */
+  align-items: center; /* Center items horizontally */
+  padding: 20px;
+}
+
+.sections-container{
+  background-color: #f2f2f2;
+  display: flex;
+  align-items: center; /* Center its children vertically */
+  width: 100%; /* Take up the entire width */
+  padding: 20px;
+}
+
+.left-section{
+  flex: 3;
+  display: flex;
+  flex-direction: column;
+  padding: 0 100px;
+}
+
+.right-section{
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  padding: 0 100px;
+}
+
+.detail-header{
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.detail-poster-container{
+  background-color: #333333;
+  display: flex;
+  justify-content: center; /* Center content horizontally */
+  align-items: center; /* Center content vertically */
+  padding: 20px;
+  width: 100%; /* Take up the entire horizontal space */
+}
+
+.detail-poster{
+  max-width: 100%;
+}
+
+.detail-content{
+  width:100%;
+  background-color: #ffffff;
+  padding: 20px;
+  height: 800px;
+}
+
+.horizontal-list{
+  display: flex;
+  flex-wrap: nowrap;
+  overflow-x: auto; /* Enable horizontal scrolling */
+  padding: 10px 0; /* Add some padding */
+  gap: 20px; /* Add some space between items */
+}
+
+.detail-text-container{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.detail-toggle-container{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.detail-toggle{
+  padding: 0 100px;
+  display: flex;
+  width: 100%; /* Take up the entire horizontal space */
+  background-color: #ffffff;
+}
+
