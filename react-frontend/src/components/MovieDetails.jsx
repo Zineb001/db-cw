@@ -111,7 +111,7 @@ const MovieDetails = () => {
         <div className = "detail-container">
           {isLoading ? (
             <p>Loading movie details...</p>
-          ) : movieDetails ? (
+            ) : movieDetails ? (
             <>
             <div className="detail-poster-container">
               <div className="detail-poster">
@@ -119,197 +119,197 @@ const MovieDetails = () => {
               </div>
             </div>
             <div className="detail-toggle-container">
-            <div className="detail-toggle">
-              <Stack direction="row" spacing={2}>
-              <Button color="secondary1"
-                  sx={{mx: 1, textTransform: 'none', fontSize: '0.875rem' }}
-                  onClick={() =>  handleTabClick('synopsis')}>
-              Synopsis
-              </Button>
-              <Button color="secondary1"
-                  sx={{mx: 1, textTransform: 'none', fontSize: '0.875rem' }}
-                  onClick={() =>  handleTabClick('cast')}>
-              Cast
-              </Button>
-              <Button color="secondary1"
-                  sx={{mx: 1, textTransform: 'none', fontSize: '0.875rem' }}
-                  onClick={() =>  handleTabClick('recommendations')}>
-              Recommendations
-              </Button>
-              </Stack>
-            </div>
+              <div className="detail-toggle">
+                <Stack direction="row" spacing={2}>
+                  <Button color="secondary1"
+                      sx={{mx: 1, textTransform: 'none', fontSize: '0.875rem' }}
+                      onClick={() =>  handleTabClick('synopsis')}>
+                  Synopsis
+                  </Button>
+                  <Button color="secondary1"
+                      sx={{mx: 1, textTransform: 'none', fontSize: '0.875rem' }}
+                      onClick={() =>  handleTabClick('cast')}>
+                  Cast
+                  </Button>
+                  <Button color="secondary1"
+                      sx={{mx: 1, textTransform: 'none', fontSize: '0.875rem' }}
+                      onClick={() =>  handleTabClick('recommendations')}>
+                  Recommendations
+                  </Button>
+                </Stack>
+              </div>
             </div>
             <div className="detail-header">
-            <h2 style={{ marginLeft: '100px', padding: 0 }}>{movieDetails[0].title}
-            <div style={{ display: 'flex', alignItems: 'center' }}>
-              <img src={theme.images.StarIcon} alt="Star" loading="lazy" style={{ height: '11px', width: 'auto' }} />
-              <p style={{ color: '#4F4F4F', fontSize: '11px', margin: '0 0 0 4px' }}>{movieDetails[0].averagerating}({movieDetails[0].ratingcount} reviews)</p>
-            </div>
-            </h2>
+              <h2 style={{ marginLeft: '100px', padding: 0 }}>{movieDetails[0].title}
+              <div style={{ display: 'flex', alignItems: 'center' }}>
+                <img src={theme.images.StarIcon} alt="Star" loading="lazy" style={{ height: '11px', width: 'auto' }} />
+                <p style={{ color: '#4F4F4F', fontSize: '11px', margin: '0 0 0 4px' }}>{movieDetails[0].averagerating}({movieDetails[0].ratingcount} reviews)</p>
+              </div>
+              </h2>
             </div> 
             <div className = "sections-container">
-            <div className="left-section">
-            <div className="detail-content">    
-            {activeTab === 'synopsis' && (
-                <>
-                  <p className="Bold14">Synopsis:</p>
-                  <p>{movieDetails[0].content}</p>
-                  <hr />
-                  <p className="Bold14">Genre:</p>                  
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      flexDirection: 'row', // Change to row direction
-                      flexWrap: 'wrap', 
-                      '& > *': {
-                        m: 1,
-                      },
-                      color: 'white',
-                      marginRight: '8px', // Adjust margin as needed
-                      marginBottom: '8px', // Adjust margin as needed
-                    }}
-                  >
-                    <ButtonGroup  color="secondary1" variant="text" aria-label="Basic button group">
-                      {movieDetails[0].genre.map(genre => (
-                        <Button  key={genre}>{genre}</Button>
-                      ))}
-                    </ButtonGroup>
-                  </Box>
-                  <hr />
-                  <p className="Bold14">Tags:</p> 
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      overflowX: "auto" , 
-                      '& > *': {
-                        m: 1,
-                      },
-                      color: 'white',
-                      marginRight: '8px', // Adjust margin as needed
-                      marginBottom: '8px', // Adjust margin as needed
-                    }}
-                  >
-                    <ButtonGroup  color="secondary1" variant="text" aria-label="Basic button group">
-                      {movieDetails[0].tags.map(tag => (
-                        <Button size="small" key={tag} style={{maxWidth: '100px', maxHeight: '55px', minWidth: '100px', minHeight: '55px'}}>#{tag}</Button>
-                      ))}
-                    </ButtonGroup>
-                  </Box>     
-                </>
-              )}
-               {activeTab === 'cast' && (
-                <>
-                  <p className="Bold14">Cast:</p>          
-                  <Box
-                    sx={{
-                      display: 'flex',
-                      overflowX: "scroll" , // Ensure the container takes up the full width
-                      '& > *': {
-                        m: 1,
-                      },
-                      color: 'white',
-                      marginRight: '8px', // Adjust margin as needed
-                      marginBottom: '8px', // Adjust margin as needed
-                    }}
-                  >
-                    <ButtonGroup  color="secondary1" variant="text" aria-label="Basic button group">
-                      {movieDetails[0].actors.map(actor => (
-                        <Button  key={actor} onClick={() => console.log(`Actor: ${actor}`)}>{actor}</Button>
-                      ))}
-                    </ButtonGroup>
-                  </Box>                  
-                </>
-              )}
-             {activeTab === 'recommendations' && recommendedMovies && discouragedMovies?(
-                <div>
-                    <Typography sx={{
-                      mt: 4,
-                      mb: 2,
-                      borderLeft: '4px solid #000', // Adjust color and thickness as needed
-                      paddingLeft: '8px', // Adjust padding as needed to space text from the line
-                    }} variant="h6" component="div">
-                        Viewers who enjoyed this movie, also enjoyed:
+              <div className="left-section">
+                <div className="detail-content">    
+                  {activeTab === 'synopsis' && (
+                      <>
+                        <p className="Bold14">Synopsis:</p>
+                        <p>{movieDetails[0].content}</p>
+                        <hr />
+                        <p className="Bold14">Genre:</p>                  
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            flexDirection: 'row', // Change to row direction
+                            flexWrap: 'wrap', 
+                            '& > *': {
+                              m: 1,
+                            },
+                            color: 'white',
+                            marginRight: '8px', // Adjust margin as needed
+                            marginBottom: '8px', // Adjust margin as needed
+                          }}
+                        >
+                          <ButtonGroup  color="secondary1" variant="text" aria-label="Basic button group">
+                            {movieDetails[0].genre.map(genre => (
+                              <Button  key={genre}>{genre}</Button>
+                            ))}
+                          </ButtonGroup>
+                        </Box>
+                        <hr />
+                        <p className="Bold14">Tags:</p> 
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            overflowX: "auto" , 
+                            '& > *': {
+                              m: 1,
+                            },
+                            color: 'white',
+                            marginRight: '8px', // Adjust margin as needed
+                            marginBottom: '8px', // Adjust margin as needed
+                          }}
+                        >
+                          <ButtonGroup  color="secondary1" variant="text" aria-label="Basic button group">
+                            {movieDetails[0].tags.map(tag => (
+                              <Button size="small" key={tag} style={{maxWidth: '100px', maxHeight: '55px', minWidth: '100px', minHeight: '55px'}}>#{tag}</Button>
+                            ))}
+                          </ButtonGroup>
+                        </Box>     
+                      </>
+                    )}
+                    {activeTab === 'cast' && (
+                      <>
+                        <p className="Bold14">Cast:</p>          
+                        <Box
+                          sx={{
+                            display: 'flex',
+                            overflowX: "scroll" , // Ensure the container takes up the full width
+                            '& > *': {
+                              m: 1,
+                            },
+                            color: 'white',
+                            marginRight: '8px', // Adjust margin as needed
+                            marginBottom: '8px', // Adjust margin as needed
+                          }}
+                        >
+                          <ButtonGroup  color="secondary1" variant="text" aria-label="Basic button group">
+                            {movieDetails[0].actors.map(actor => (
+                              <Button  key={actor} onClick={() => console.log(`Actor: ${actor}`)}>{actor}</Button>
+                            ))}
+                          </ButtonGroup>
+                        </Box>                  
+                      </>
+                    )}
+                  {activeTab === 'recommendations' && recommendedMovies && discouragedMovies?(
+                      <div>
+                        <Typography sx={{
+                          mt: 4,
+                          mb: 2,
+                          borderLeft: '4px solid #000', // Adjust color and thickness as needed
+                          paddingLeft: '8px', // Adjust padding as needed to space text from the line
+                        }} variant="h6" component="div">
+                            Viewers who enjoyed this movie, also enjoyed:
+                        </Typography>
+                        <List style={{backgroundColor: '#f2f2f2', borderRadius:'10px'}} className="horizontal-list">
+                          {recommendedMovies.map(movie => (
+                          <ListItem key={movie.id} component={Link} to={`/movie-details/${movie.id}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                          onClick={() => setActiveTab('synopsis')}>
+                            <img className="detail-poster" src={movie.poster} alt={movie.title} />
+                            <div className="detail-text-container">
+                                <ListItemText
+                                    primaryTypographyProps={{ style: { fontSize: '12px' , color:'black'} }} 
+                                    primary={movie.title}
+                                />
+                            </div>
+                          </ListItem>
+                          ))}
+                        </List>
+                        <hr/>
+                        <Typography sx={{
+                            mt: 4,
+                            mb: 2,
+                            borderLeft: '4px solid #000', // Adjust color and thickness as needed
+                            paddingLeft: '8px', // Adjust padding as needed to space text from the line
+                          }} variant="h6" component="div">
+                                    Viewers who did not enjoy this movie, also did not enjoy:
+                        </Typography>
+                        <List style={{backgroundColor: '#f2f2f2', borderRadius:'10px'}} className="horizontal-list">
+                        {discouragedMovies.map(movie => (
+                        <ListItem key={movie.id} component={Link} to={`/movie-details/${movie.id}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
+                        onClick={() => setActiveTab('synopsis')}>
+                        <img className="detail-poster" src={movie.poster} alt={movie.title} />
+                        <div className="detail-text-container">
+                            <ListItemText
+                                primaryTypographyProps={{ style: { fontSize: '12px', color:'black'} }} 
+                                primary={movie.title}
+                            />
+                        </div>
+                      </ListItem>
+                    ))}
+                </List>
+                    </div>
+                    
+                ) : (
+                    <p></p>
+                )}
+                </div>
+              </div>
+              <div className="right-section">
+              {directorDetails ? (
+                  <div className="detail-content">
+                    <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
+                    <p>Also by director: {directorDetails[0].directors.join(', ')}</p>
                     </Typography>
-                    <List style={{backgroundColor: '#f2f2f2', borderRadius:'10px'}} className="horizontal-list">
-                {recommendedMovies.map(movie => (
-                <ListItem key={movie.id} component={Link} to={`/movie-details/${movie.id}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                onClick={() => setActiveTab('synopsis')}>
-                <img className="detail-poster" src={movie.poster} alt={movie.title} />
-                <div className="detail-text-container">
-                    <ListItemText
-                        primaryTypographyProps={{ style: { fontSize: '12px' , color:'black'} }} 
-                        primary={movie.title}
-                    />
-                </div>
-              </ListItem>
-                ))}
-            </List>
-            <hr/>
-            <Typography sx={{
-                mt: 4,
-                mb: 2,
-                borderLeft: '4px solid #000', // Adjust color and thickness as needed
-                paddingLeft: '8px', // Adjust padding as needed to space text from the line
-              }} variant="h6" component="div">
-                        Viewers who did not enjoy this movie, also did not enjoy:
-            </Typography>
-                    <List style={{backgroundColor: '#f2f2f2', borderRadius:'10px'}} className="horizontal-list">
-                {discouragedMovies.map(movie => (
-                <ListItem key={movie.id} component={Link} to={`/movie-details/${movie.id}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
-                onClick={() => setActiveTab('synopsis')}>
-                <img className="detail-poster" src={movie.poster} alt={movie.title} />
-                <div className="detail-text-container">
-                    <ListItemText
-                        primaryTypographyProps={{ style: { fontSize: '12px', color:'black'} }} 
-                        primary={movie.title}
-                    />
-                </div>
-              </ListItem>
-                ))}
-            </List>
-                </div>
-                
-            ) : (
-                <p></p>
-            )}
-            </div>
-            </div>
-            <div className="right-section">
-            {directorDetails ? (
-                <div className="detail-content">
-                  <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
-                  <p>Also by director: {directorDetails[0].directors.join(', ')}</p>
-                  </Typography>
-                  <hr />
-            <Box
-                sx={{
-                  display: 'flex',
-                  '& > *': {
-                    m: 1,
-                  },
-                }}>
-                <ButtonGroup
-                  orientation="vertical"
-                  aria-label="Vertical button group"
-                  variant="text"
-                >
-                  {directorDetails.map(movie => (
-                    <Button color="secondary1"  key={movie.id} component={Link} to={`/movie-details/${movie.id}`}
-                    onClick={() => setActiveTab('synopsis')}>
-                      <ListItemText
-                        primary={movie.title}
-                        secondary={movie.releaseDate} // Assuming you have a release date for each movie
-                      />
-                    </Button>
-                  ))}
-                </ButtonGroup>
-              </Box>
-                </div>
-              ) : (
-                <p>No director details found</p>
-              )}
-            </div>
-            </div>
+                    <hr />
+                  <Box
+                      sx={{
+                        display: 'flex',
+                        '& > *': {
+                          m: 1,
+                        },
+                      }}>
+                      <ButtonGroup
+                        orientation="vertical"
+                        aria-label="Vertical button group"
+                        variant="text"
+                      >
+                        {directorDetails.map(movie => (
+                          <Button color="secondary1"  key={movie.id} component={Link} to={`/movie-details/${movie.id}`}
+                          onClick={() => setActiveTab('synopsis')}>
+                            <ListItemText
+                              primary={movie.title}
+                              secondary={movie.releaseDate} // Assuming you have a release date for each movie
+                            />
+                          </Button>
+                        ))}
+                      </ButtonGroup>
+                    </Box>
+                  </div>
+                ) : (
+                  <p>No director details found</p>
+                )}
+              </div>
+              </div>
             </>
           ) : (
             <p>No movie details found for ID {movieID}</p>
