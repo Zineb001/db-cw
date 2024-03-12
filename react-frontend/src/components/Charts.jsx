@@ -323,7 +323,7 @@ export const GenreHistogram = ({ data, selectedGenre }) => {
           },
           title: {
             display: true,
-            text: 'Personality Traits',
+            text: 'Genres',
             color: 'white',
           },
           grid: {
@@ -375,7 +375,7 @@ export const GenrePersonalitysHistogram = ({ personalityGenres, selectedTrait })
           },
           title: {
             display: true,
-            text: 'Personality Traits',
+            text: 'Genres',
             color: 'white',
           },
           grid: {

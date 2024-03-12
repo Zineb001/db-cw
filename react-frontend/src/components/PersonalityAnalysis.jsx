@@ -197,8 +197,6 @@ function PersonalityAnalysis() {
                   textDecoration: 'none', 
                   width: '100%', 
                   textAlign: 'center',
-                  paddingLeft: 20,
-                  paddingRight: 20,
                   font: "Verdana" 
                 }
               }}
@@ -252,7 +250,7 @@ function PersonalityAnalysis() {
                   },
                 }}
               />
-              <a href="#" style={{ color: 'white'}}>Select a personality to display the correlation between it and the users' rating per genre</a>
+              <a href="#" style={{ color: 'white', textAlign: 'center', paddingLeft: 20, paddingRight: 20,}}>Select a personality to display the correlation between it and the users' rating per genre</a>
             </Box>
             </div>
             <div className="personality-histogram-container ">
