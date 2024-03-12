@@ -24,7 +24,7 @@ const MovieCard = ({ movie }) => {
                     <img src={theme.images.StarIcon} alt="Star" loading="lazy" />
                 </span>
                 <span className="rating-number">{formatRating(movie.averagerating)}</span> 
-                <span className="rating-type"> (predicted)</span> 
+                <span className="rating-type">( )(predicted)</span> 
             </div>
             <p className="movie-cast">{renderActors(movie.actors)}</p>
             <p className="movie-content">{truncateContent(movie.content)}</p> 

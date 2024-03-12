@@ -1,5 +1,5 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import AppBar from '@mui/material/AppBar';
 import Toolbar from '@mui/material/Toolbar';
 import IconButton from '@mui/material/IconButton';
@@ -15,8 +15,11 @@ import SearchIcon from '@mui/icons-material/Search';
 import { ThemeProvider } from '@emotion/react';
 import theme from './theme';
 
-const NavigationBar = () => {
-  const navigate = useNavigate(); // Initialize useNavigate hook
+function NavigationBar({ searchTerm, handleSearchChange }) {
+  const navigate = useNavigate(); 
+  const location = useLocation();
+  const isSearchPage = location.pathname === '/search-movie';
+
   return (
     <ThemeProvider theme={theme}> 
     <AppBar position="static" backgroundColor="primary">
@@ -27,24 +30,34 @@ const NavigationBar = () => {
         </IconButton>
         
         {/* The Search Field */}
-        <TextField
-            variant="standard"
-            placeholder="Search Movie"
-            InputProps={{
-                startAdornment: (
-                <InputAdornment position="start">
-                    <SearchIcon />
-                </InputAdornment>
-                ),
-                style: { textTransform: 'none', fontSize: '0.875rem' },
-            }}
-            sx={{
-                marginLeft: 'auto',
-                marginRight: 1, 
-                '& .MuiOutlinedInput-root': {borderRadius: '4px'},
-            }}
-        />
-
+        {isSearchPage ? (
+            <TextField
+                variant="standard"
+                placeholder="Search for a movie..."
+                value={searchTerm}
+                onChange={handleSearchChange}
+                InputProps={{
+                    startAdornment: (
+                    <InputAdornment position="start">
+                        <SearchIcon />
+                    </InputAdornment>
+                    ),
+                    style: { textTransform: 'none', fontSize: '0.875rem' },
+                }}
+                sx={{
+                    marginLeft: 'auto',
+                    marginRight: 1, 
+                    '& .MuiOutlinedInput-root': {borderRadius: '4px'},
+                }}
+            />
+          ) : (
+            <IconButton
+              sx={{ marginLeft: 'auto', marginRight : 2, color: 'inherit' }}
+              onClick={() => navigate('/search-movie')}
+            >
+              <SearchIcon />
+            </IconButton>
+          )}
 
         {/* Navigation Buttons */}
         <Button variant='contained' color="secondary2"
