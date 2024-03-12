@@ -121,24 +121,6 @@
 
 /* charts discover genres */
 
-.chart-container {
-  display: flex;
-  justify-content: space-between;
-  padding-top: 100px;
-}
-
-.chart-area {
-  flex: 1;
-  max-width: 90%;
-  padding-left: 100px; 
-}
-
-.dropdown-area {
-  flex: 1;
-  max-width: 40%; 
-  padding-left: 200px;
-}
-
 .main-container {
   display: flex; 
   background-color: #333333; 
@@ -210,18 +192,62 @@
 
 .white-text {
   color: white;
-  padding-left: 30px;
+  padding-left: 300px;
+}
+
+.main-pie-container {
+  display: flex; 
+  background-color: #333333; 
+  gap: 100px;
+  padding-top: 0px;
+  gap: 0.5px;
 }
 
 .pie-container {
   background-color:'#E0E0E0'; 
   padding-left: 150px;
+  width: 900px;
+  height: 900px;
 
 }
 
 .pie-menu-container {
   background-color:'#E0E0E0'; 
-  padding-left: 50px;
+  padding-left: 300px;
   padding-right: 20px;
+  padding-top: 300px;
    
+}
+
+.vertical-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 10px; 
+}
+
+.histogram, .dropdown-menu, .pie-chart {
+  flex-grow: 1; 
+}
+
+.dropdown-menu {
+  flex-basis: 15%;
+  background-color:'#E0E0E0'; 
+}
+
+.histogram {
+  flex-basis: 40%; 
+  background-color:'#E0E0E0';
+}
+
+.pie-chart {
+  flex-basis: 45%; 
+  background-color:'#E0E0E0';
+}
+
+.horizontal-layout {
+  display: flex;
+  justify-content: space-between; /* Distributes space evenly between elements */
+  align-items: center; /* Vertically centers the items in the container */
+  gap: 20px; /* Adjust the gap between elements as needed */
+  background-color: #333333;
 }
