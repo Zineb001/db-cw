@@ -274,6 +274,8 @@
   display: flex;
   flex-direction: column;
   padding: 0 100px;
+  overflow: hidden; /* Prevent content overflow */
+  box-sizing: border-box;
 }
 
 .right-section{
@@ -284,9 +286,11 @@
 }
 
 .detail-header{
+  width: 100%;
   display: flex;
-  align-items: center;
-  margin-bottom: 20px;
+  background-color: #f2f2f2;
+  align-items: flex-start;
+  padding: 0 20px;
 }
 
 .detail-poster-container{
@@ -306,7 +310,8 @@
   width:100%;
   background-color: #ffffff;
   padding: 20px;
-  height: 800px;
+  height: 700px;
+  box-sizing: border-box;
 }
 
 .horizontal-list{
@@ -315,6 +320,7 @@
   overflow-x: auto; /* Enable horizontal scrolling */
   padding: 10px 0; /* Add some padding */
   gap: 20px; /* Add some space between items */
+  border-radius: '10px';
 }
 
 .detail-text-container{
@@ -337,3 +343,7 @@
   background-color: #ffffff;
 }
 
+.Bold14 {
+  font-size: 14px;
+  font-weight: bold;
+}
