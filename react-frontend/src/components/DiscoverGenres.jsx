@@ -15,7 +15,6 @@ function calculateRatingsByGenre(movies) {
       const rating = parseFloat(movie.averagerating); 
 
       movie.genre.forEach(genre => { 
-        //console.log(`Processing genre: ${genre} for movie: ${movie.title} with rating: ${movie.averagerating}`);
           if (!genreStats[genre]) {
               genreStats[genre] = { '5 stars': 0, 'between 4 and 5': 0, 'between 3 and 4': 0, 'between 2 and 3': 0, 'between 1 and 2': 0, 'less than 1 star': 0 };
           }
@@ -53,7 +52,11 @@ function DiscoverGenres() {
   const [mostReviewedGenres, setMostReviewedGenres] = useState([]);;
   const [mostReleasedGenres, setMostReleasedGenres] = useState([]);;
   const [personalityGenres, setPersonalityGenres] = useState([]);;
+  const [HighlyRatedGenresData, setHighlyRatedGenresData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const hardcodedGenres = ["Action","Adventure","Animation","Children","Comedy","Crime","Documentary","Drama","Fantasy","Film-Noir","Horror","IMAX","Musical","Mystery","Romance","Sci-Fi","Thriller","War","Western"];
+  const [selectedGenre, setSelectedGenre] = useState(hardcodedGenres[0]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,6 +105,27 @@ function DiscoverGenres() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchHighlyRatedGenres = async () => {
+      if (!selectedGenre) return; 
+  
+      try {
+        const response = await fetch(`http://localhost:3001/api/highlyRatedGenres?genres=${encodeURIComponent(selectedGenre)}`);
+        if (!response.ok) throw new Error('Failed to fetch highly rated genres');
+        
+        const highlyRatedData = await response.json();
+        setHighlyRatedGenresData(highlyRatedData);
+      } catch (error) {
+        console.error('Error fetching highly rated genres:', error);
+      }
+    };
+  
+    if (selectedGenre) { 
+      fetchHighlyRatedGenres();
+    }
+  }, [selectedGenre]);
+
+
   const [selectedChart, setSelectedChart] = useState('polarizing');
 
   const handleChange = (event) => {
@@ -121,11 +145,9 @@ function DiscoverGenres() {
   const mostReleasedGenresNames = mostReleasedGenres.map(genre => genre.name);
   const releasescount = mostReleasedGenres.map(genre => parseInt(genre.releasescount));
 
-  const hardcodedGenres = ["Action","Adventure","Animation","Children","Comedy","Crime","Documentary","Drama","Fantasy","Film-Noir","Horror","IMAX","Musical","Mystery","Romance","Sci-Fi","Thriller","War","Western"];
 
   const genreStats = calculateRatingsByGenre(movieDetails);
   //console.log(genreStats)
-  const [selectedGenre, setSelectedGenre] = useState(hardcodedGenres[0]);
 
   // Find the data for the selected genre
   const selectedGenreData = genreStats.find(g => g.genre === selectedGenre) || {};
@@ -215,6 +237,14 @@ function DiscoverGenres() {
             <div className="histogram">
               <GenreHistogram data={personalityGenres} selectedGenre={selectedGenre} />
             </div>
+          </div>
+          <div>
+            <h2>Genre Leaderboard</h2>
+            <ol>
+              {HighlyRatedGenresData.map((genre, index) => (
+                <li key={index}>{genre}</li> 
+              ))}
+            </ol>
           </div>
         </div>
         </>
