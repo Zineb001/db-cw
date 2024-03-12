@@ -208,3 +208,20 @@
   flex-grow: 1; 
 }
 
+.white-text {
+  color: white;
+  padding-left: 30px;
+}
+
+.pie-container {
+  background-color:'#E0E0E0'; 
+  padding-left: 150px;
+
+}
+
+.pie-menu-container {
+  background-color:'#E0E0E0'; 
+  padding-left: 50px;
+  padding-right: 20px;
+   
+}

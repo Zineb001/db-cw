@@ -1,5 +1,5 @@
 import * as React from "react";
-import { Bar } from 'react-chartjs-2';
+import { Bar, Pie } from 'react-chartjs-2';
 import 'chart.js/auto';
 import './style.css';
 
@@ -230,3 +230,42 @@ export function MostReleasedGenresLeaderboard({genreNames}) {
       </div>))}
     </div>
 )}
+
+export function GenrePieChart ({ genreData }) {
+    const data = {
+      labels: ['5 stars', 'between 4 and 5', 'between 3 and 4', 'between 2 and 3', 'between 1 and 2', 'less than 1 star'],
+      datasets: [
+        {
+          data: [
+            genreData['5 stars'],
+            genreData['between 4 and 5'],
+            genreData['between 3 and 4'],
+            genreData['between 2 and 3'],
+            genreData['between 1 and 2'],
+            genreData['less than 1 star'],
+          ],
+          backgroundColor: [
+            '#FF6384',
+            '#36A2EB',
+            '#FFCE56',
+            '#4BC0C0',
+            '#9966FF',
+            '#C9CBCF',
+          ],
+          hoverOffset: 4,
+        },
+      ],
+    };
+    const options = {
+        plugins: {
+            legend: {
+                position: 'right',
+            },
+        },
+        radius: '120%', 
+        maintainAspectRatio: false,
+    };
+
+  
+    return <Pie data={data} />;
+  };

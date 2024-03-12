@@ -6,10 +6,48 @@ import theme from './theme';
 import './style.css';
 import NavigationBar from './NavigationBar';
 import { Select, MenuItem, FormControl, InputLabel, Box } from '@mui/material';
-import {PolarizingGenresHistogram, BestRatedGenresHistogram, MostReviewedGenresHistogram, MostReleasedGenresHistogram, PolarizingGenresLeaderboard, BestRatedGenresLeaderboard, MostReviewedGenresLeaderboard, MostReleasedGenresLeaderboard} from './Charts';
+import {PolarizingGenresHistogram, BestRatedGenresHistogram, MostReviewedGenresHistogram, MostReleasedGenresHistogram, PolarizingGenresLeaderboard, BestRatedGenresLeaderboard, MostReviewedGenresLeaderboard, MostReleasedGenresLeaderboard, GenrePieChart} from './Charts';
+
+function calculateRatingsByGenre(movies) {
+  let genreStats = {};
+
+  movies.forEach(movie => {
+      const rating = parseFloat(movie.averagerating); 
+
+      movie.genre.forEach(genre => { 
+        //console.log(`Processing genre: ${genre} for movie: ${movie.title} with rating: ${movie.averagerating}`);
+          if (!genreStats[genre]) {
+              genreStats[genre] = { '5 stars': 0, 'between 4 and 5': 0, 'between 3 and 4': 0, 'between 2 and 3': 0, 'between 1 and 2': 0, 'less than 1 star': 0 };
+          }
+
+          if (rating === 5) {
+              genreStats[genre]['5 stars']++;
+          } else if (rating >= 4) {
+              genreStats[genre]['between 4 and 5']++;
+          } else if (rating >= 3) {
+              genreStats[genre]['between 3 and 4']++;
+          } else if (rating >= 2) {
+              genreStats[genre]['between 2 and 3']++;
+          } else if (rating >= 1) {
+              genreStats[genre]['between 1 and 2']++;
+          } else {
+              genreStats[genre]['less than 1 star']++;
+          }
+      });
+  });
+
+  return Object.keys(genreStats).map(genre => ({
+      genre,
+      ...genreStats[genre]
+  }));
+}
+
+
+
 
 function DiscoverGenres() {
   const [genreNames, setGenreNames] = useState([]);
+  const [movieDetails, setMovieDetails] = useState([]);
   const [mostPolarizingGenres, setMostPolarizingGenres] = useState([]);;
   const [bestRatedGenres, setBestRatedGenres] =useState([]);;
   const [mostReviewedGenres, setMostReviewedGenres] = useState([]);;
@@ -19,26 +57,35 @@ function DiscoverGenres() {
   useEffect(() => {
     const fetchData = async () => {
       setIsLoading(true);
-      try {
+      try {        
         const genreNamesResponse = await fetch('http://localhost:3001/api/genresNames');
         const genreNamesData = await genreNamesResponse.json();
         setGenreNames(genreNamesData);
+
+        const movieResponse = await fetch('http://localhost:3001/api/searchMovies');
+        const movieData = await movieResponse.json();
+        setMovieDetails(movieData);
   
         const mostPolarizingGenreResponse = await fetch('http://localhost:3001/api/mostPolarizedGenres');
         const mostPolarizingGenreData = await mostPolarizingGenreResponse.json();
-        setMostPolarizingGenres(mostPolarizingGenreData);
+        const filteredMostPolarizingGenreData = mostPolarizingGenreData.filter(genre => genre.name !== "(no genres listed)");
+        setMostPolarizingGenres(filteredMostPolarizingGenreData);
 
         const bestRatedGenreResponse = await fetch('http://localhost:3001/api/bestRatedGenres');
         const bestRatedGenreData = await bestRatedGenreResponse.json();
-        setBestRatedGenres(bestRatedGenreData);
+        const filteredBestRatedGenreData = bestRatedGenreData.filter(genre => genre.name !== "(no genres listed)");
+        setBestRatedGenres(filteredBestRatedGenreData);
 
         const mostReviewedGenreResponse = await fetch('http://localhost:3001/api/mostReviewedGenres');
         const mostReviewedGenreData = await mostReviewedGenreResponse.json();
-        setMostReviewedGenres(mostReviewedGenreData);
+        const filteredMostReviewedGenreData = mostReviewedGenreData.filter(genre => genre.name !== "(no genres listed)");
+        setMostReviewedGenres(filteredMostReviewedGenreData);
 
         const mostReleasedGenreResponse = await fetch('http://localhost:3001/api/mostReleasedGenres');
         const mostReleasedGenreData = await mostReleasedGenreResponse.json();
-        setMostReleasedGenres(mostReleasedGenreData);
+        const filteredMostReleasedGenreData = mostReleasedGenreData.filter(genre => genre.name !== "(no genres listed)");
+        setMostReleasedGenres(filteredMostReleasedGenreData);
+
   
   
       } catch (error) {
@@ -55,6 +102,10 @@ function DiscoverGenres() {
   const handleChange = (event) => {
     setSelectedChart(event.target.value);
   };
+
+  const handleChangeGenre = (event) => {
+    setSelectedGenre(event.target.value);
+  };
   
   const polarizingGenreNames = mostPolarizingGenres.map(genre => genre.name);
   const sdRatings = mostPolarizingGenres.map(genre => parseFloat(genre.sdrating));
@@ -64,6 +115,15 @@ function DiscoverGenres() {
   const reviewscount = mostReviewedGenres.map(genre => parseInt(genre.reviewscount));
   const mostReleasedGenresNames = mostReleasedGenres.map(genre => genre.name);
   const releasescount = mostReleasedGenres.map(genre => parseInt(genre.releasescount));
+
+  const hardcodedGenres = ["Action","Adventure","Animation","Children","Comedy","Crime","Documentary","Drama","Fantasy","Film-Noir","Horror","IMAX","Musical","Mystery","Romance","Sci-Fi","Thriller","War","Western"];
+
+  const genreStats = calculateRatingsByGenre(movieDetails);
+  //console.log(genreStats)
+  const [selectedGenre, setSelectedGenre] = useState(hardcodedGenres[0]);
+
+  // Find the data for the selected genre
+  const selectedGenreData = genreStats.find(g => g.genre === selectedGenre) || {};
 
   return (
     <ThemeProvider theme={theme}>
@@ -111,6 +171,41 @@ function DiscoverGenres() {
                 {selectedChart === 'mostReviewed' && <MostReviewedGenresLeaderboard genreNames={mostReviewedGenresNames} />}
                 {selectedChart === 'mostReleased' &&<MostReleasedGenresLeaderboard genreNames={mostReleasedGenresNames} />}
               </div>
+            </div>
+          </div>
+          <div className="main-container">
+            <div  className="pie-menu-container ">
+              <Box sx={{ minWidth: 120, mx: 1 }}>
+                <FormControl variant="outlined" fullWidth>
+                  <InputLabel sx={{ color: 'white' }} id="genre-select-label">Select Genre</InputLabel>
+                  <Select
+                    labelId="genre-select-label"
+                    id="genre-select"
+                    value={selectedGenre}
+                    label="Select Genre"
+                    onChange={handleChangeGenre}
+                    sx={{
+                      textTransform: 'none',
+                      fontSize: '0.875rem',
+                      color: 'white',
+                      '& .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'white',
+                      },
+                      '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                        borderColor: 'white',
+                      },
+                    }}
+                  >
+                    {genreStats.map((genre) => (
+                      <MenuItem key={genre.genre} value={genre.genre}>{genre.genre}</MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            </div>
+            <div className="pie-container">
+            <h2 className="white-text">Genre Ratings Distribution</h2>
+              <GenrePieChart genreData={selectedGenreData} />
             </div>
           </div>
         </>
