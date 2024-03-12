@@ -15,10 +15,26 @@ const FilterComponent = ({ filters, setFilters }) => {
     const [directors, setDirectors] = useState([]);
 
     useEffect(() => {
-        setGenres(mockGenres);
-        setTags(mockTags);
-        setCast(mockCast);
-        setDirectors(mockDirectors);
+      const endpoints = [
+        { url: 'http://localhost:3001/api/genresNames', setState: setGenres },
+        { url: 'http://localhost:3001/api/actorsNames', setState: setCast },
+        { url: 'http://localhost:3001/api/tags', setState: setTags },
+        { url: 'http://localhost:3001/api/directorsNames', setState: setDirectors },
+      ];
+    
+      const fetchAllData = async () => {
+        try {
+          for (const endpoint of endpoints) {
+            const response = await fetch(endpoint.url);
+            const data = await response.json();
+            endpoint.setState(data);
+          }
+        } catch (error) {
+          console.error('Error fetching data:', error);
+        } 
+      };
+    
+      fetchAllData(); 
     }, []);
     
 
