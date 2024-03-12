@@ -179,6 +179,78 @@ async function getHighlyRatedGenres(givenGenre)
     throw new Error("Failed to fetch recommended genres");
   }
 }
+async function getLowRatedGenres(givenGenre)
+{
+  try{ 
+    // Step 1: Select Movie IDs with Given Genre 
+    const movieIds = await executeSQLQuery(`
+            SELECT id 
+            FROM VIEW_MOVIE 
+            WHERE '${givenGenre}' = ANY(genre);
+        `);
+
+    // Extract movie IDs
+    const movieIdArray = movieIds.map(row => row.id);
+
+    // Step 2: Select Distinct Users who Rated Movies below 3 stars
+    const lowRatedUsers = await executeSQLQuery(`
+            SELECT DISTINCT user_id 
+            FROM VIEW_MOVIE_RATING 
+            WHERE movie_id IN (${movieIdArray.join(',')})
+            GROUP BY user_id
+            HAVING MAX(CASE WHEN movie_id IN (${movieIdArray.join(',')}) THEN rating ELSE NULL END) < 3;
+        `);
+      
+    // Extract user IDs
+    const userIds = lowRatedUsers.map(row => row.user_id);
+
+    // Step 3: Get Distinct Genres of Low Rated Movies by Users
+    const lowRatedMovies = await executeSQLQuery(`
+    SELECT id, genre 
+    FROM VIEW_MOVIE 
+    WHERE id IN (
+        SELECT movie_id
+        FROM VIEW_MOVIE_RATING
+        WHERE user_id IN (${userIds.map(id => `'${id}'`).join(',')})
+    )
+    `);
+
+    // Calculate average rating for each genre
+    const genreRatings = {};
+    lowRatedMovies.forEach(movie => {
+    movie.genre.forEach(genre => {
+        if (!genreRatings[genre]) {
+            genreRatings[genre] = [];
+        }
+        genreRatings[genre].push(movie.id); // Store movie ID for each genre
+    });
+    });
+
+    const avgGenreRatings = {};
+    for (const genre in genreRatings) {
+    const movieIds = genreRatings[genre].join(',');
+    const ratings = await executeSQLQuery(`
+        SELECT AVG(rating) AS avg_rating
+        FROM VIEW_MOVIE_RATING
+        WHERE movie_id IN (${movieIds})
+    `);
+    avgGenreRatings[genre] = ratings[0].avg_rating;
+    }
+    console.log("avgGenreRatings:", avgGenreRatings)
+    // Calculate average ratings over all genres average ratings by this user group
+    const genres = Object.keys(avgGenreRatings);
+    const totalGenres = genres.length;
+    const overallAverage = genres.reduce((sum, genre) => sum + avgGenreRatings[genre], 0) / totalGenres;
+    console.log("overallAverage:", overallAverage)
+    // Filter genres with average rating above overall average rating of all genres rated by this user group
+    const distinctGenres = Object.keys(avgGenreRatings)
+    .filter(genre => genre !== givenGenre && avgGenreRatings[genre] < overallAverage);
+
+    return distinctGenres
+  }catch (error) {
+    throw new Error("Failed to fetch recommended genres");
+  }
+}
 
 module.exports = {
   getGenreNames,
@@ -187,5 +259,5 @@ module.exports = {
   getMostReviewedGenres,
   getMostReleasedGenres,
   getHighlyRatedGenres,
-  getDiscouragedGenres,
+  getLowRatedGenres,
 };
