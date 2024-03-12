@@ -98,69 +98,157 @@ async function getMostReleasedGenres() {
   }
 }
 
-async function getRecommendedGenres(givenGenre) {
+async function executeSQLQuery(query) {
+  const client = await pool.connect();
   try {
-    //do viewers who tend to rate sci-fi films highly also rate another genre highly? 
-    //---
-    //given a list of genres (given_genres)
-    //go through all users in ratings which rated a movie whose list of genres has genres in given_genres
-    //calculate average rating for movies which genres are in given_genres
-    //check if that average rating is above the user averagerating value
-    //if it is then look movies of that user and calculate average ratings for each genre
-    //check if it is above users averagerating
-    //if it is, select that genre and do that with every user and get intersection of genres
-    //---
+      const result = await client.query(query);
+      return result.rows;
+  } finally {
+      client.release();
+  }
+}
 
-    const client = await pool.connect();
-    const query = `
-    WITH given_genre_movies AS (
-      SELECT 
-          mr.user_id,
-          AVG(mr.rating) AS avg_given_genre_rating
-      FROM 
-          VIEW_MOVIE m
-      JOIN 
-          VIEW_MOVIE_RATING mr ON m.id = mr.movie_id
-      WHERE 
-          ${givenGenre} = ANY(lower(m.genre)) -- Select movies with the given genre
-      GROUP BY 
-          mr.user_id
-  ),
-  other_genre_movies AS (
-      SELECT 
-          mr.user_id,
-          AVG(mr.rating) AS avg_other_genre_rating
-      FROM 
-          VIEW_MOVIE m
-      JOIN 
-          VIEW_MOVIE_RATING mr ON m.id = mr.movie_id
-      WHERE 
-          ${givenGenre} != ALL(lower(m.genre)) -- Select movies without the given genre
-      GROUP BY 
-          mr.user_id
-  )
-  SELECT 
-      CASE 
-          WHEN AVG(ogr.avg_other_genre_rating) > AVG(ggr.avg_given_genre_rating) THEN g.name
-          ELSE NULL
-      END AS recommended_genre
-  FROM 
-      given_genre_movies ggr
-  JOIN 
-      other_genre_movies ogr ON ggr.user_id = ogr.user_id
-  JOIN
-      VIEW_GENRE g ON g.averagerating > ggr.avg_given_genre_rating -- Filter genres with average rating higher than the given genre
-  GROUP BY
-      g.name;
-    `;
-    const result = await client.query(query);
-    client.release();
-    const genres = await getGenres();
-    console.log("recommended genres: ", result);
-   
-    return genres;
-  } catch (error) {
-    throw new Error("Failed to fetch most released genres");
+async function getHighlyRatedGenres(givenGenre)
+{
+  try{ 
+    // Step 1: Select Movie IDs with Given Genre 
+    const movieIds = await executeSQLQuery(`
+            SELECT id 
+            FROM VIEW_MOVIE 
+            WHERE '${givenGenre}' = ANY(genre);
+        `);
+
+    // Extract movie IDs
+    const movieIdArray = movieIds.map(row => row.id);
+
+    // Step 2: Select Distinct Users who Rated Movies of 5 Stars
+    const highlyRatedUsers = await executeSQLQuery(`
+            SELECT DISTINCT user_id 
+            FROM VIEW_MOVIE_RATING 
+            WHERE movie_id IN (${movieIdArray.join(',')})
+            GROUP BY user_id
+            HAVING MIN(CASE WHEN movie_id IN (${movieIdArray.join(',')}) THEN rating ELSE NULL END) = 5;
+        `);
+      
+    // Extract user IDs
+    const userIds = highlyRatedUsers.map(row => row.user_id);
+
+    // Step 3: Get Distinct Genres of Highly Rated Movies by Users
+    const highlyRatedMovies = await executeSQLQuery(`
+    SELECT id, genre 
+    FROM VIEW_MOVIE 
+    WHERE id IN (
+        SELECT movie_id
+        FROM VIEW_MOVIE_RATING
+        WHERE user_id IN (${userIds.map(id => `'${id}'`).join(',')})
+    )
+    `);
+
+    // Calculate average rating for each genre
+    const genreRatings = {};
+    highlyRatedMovies.forEach(movie => {
+    movie.genre.forEach(genre => {
+        if (!genreRatings[genre]) {
+            genreRatings[genre] = [];
+        }
+        genreRatings[genre].push(movie.id); // Store movie ID for each genre
+    });
+    });
+
+    const avgGenreRatings = {};
+    for (const genre in genreRatings) {
+    const movieIds = genreRatings[genre].join(',');
+    const ratings = await executeSQLQuery(`
+        SELECT AVG(rating) AS avg_rating
+        FROM VIEW_MOVIE_RATING
+        WHERE movie_id IN (${movieIds})
+    `);
+    avgGenreRatings[genre] = ratings[0].avg_rating;
+    }
+    // Calculate average ratings over all genres average ratings by this user group
+    const genres = Object.keys(avgGenreRatings);
+    const totalGenres = genres.length;
+    const overallAverage = genres.reduce((sum, genre) => sum + avgGenreRatings[genre], 0) / totalGenres;
+
+    // Filter genres with average rating above overall average rating of all genres rated by this user group
+    const distinctGenres = Object.keys(avgGenreRatings)
+    .filter(genre => genre !== givenGenre && avgGenreRatings[genre] > overallAverage);
+
+    return distinctGenres
+  }catch (error) {
+    throw new Error("Failed to fetch recommended genres");
+  }
+}
+async function getLowRatedGenres(givenGenre)
+{
+  try{ 
+    // Step 1: Select Movie IDs with Given Genre 
+    const movieIds = await executeSQLQuery(`
+            SELECT id 
+            FROM VIEW_MOVIE 
+            WHERE '${givenGenre}' = ANY(genre);
+        `);
+
+    // Extract movie IDs
+    const movieIdArray = movieIds.map(row => row.id);
+
+    // Step 2: Select Distinct Users who Rated Movies below 3 stars
+    const lowRatedUsers = await executeSQLQuery(`
+            SELECT DISTINCT user_id 
+            FROM VIEW_MOVIE_RATING 
+            WHERE movie_id IN (${movieIdArray.join(',')})
+            GROUP BY user_id
+            HAVING MAX(CASE WHEN movie_id IN (${movieIdArray.join(',')}) THEN rating ELSE NULL END) < 3;
+        `);
+      
+    // Extract user IDs
+    const userIds = lowRatedUsers.map(row => row.user_id);
+
+    // Step 3: Get Distinct Genres of Low Rated Movies by Users
+    const lowRatedMovies = await executeSQLQuery(`
+    SELECT id, genre 
+    FROM VIEW_MOVIE 
+    WHERE id IN (
+        SELECT movie_id
+        FROM VIEW_MOVIE_RATING
+        WHERE user_id IN (${userIds.map(id => `'${id}'`).join(',')})
+    )
+    `);
+
+    // Calculate average rating for each genre
+    const genreRatings = {};
+    lowRatedMovies.forEach(movie => {
+    movie.genre.forEach(genre => {
+        if (!genreRatings[genre]) {
+            genreRatings[genre] = [];
+        }
+        genreRatings[genre].push(movie.id); // Store movie ID for each genre
+    });
+    });
+
+    const avgGenreRatings = {};
+    for (const genre in genreRatings) {
+    const movieIds = genreRatings[genre].join(',');
+    const ratings = await executeSQLQuery(`
+        SELECT AVG(rating) AS avg_rating
+        FROM VIEW_MOVIE_RATING
+        WHERE movie_id IN (${movieIds})
+    `);
+    avgGenreRatings[genre] = ratings[0].avg_rating;
+    }
+    console.log("avgGenreRatings:", avgGenreRatings)
+    // Calculate average ratings over all genres average ratings by this user group
+    const genres = Object.keys(avgGenreRatings);
+    const totalGenres = genres.length;
+    const overallAverage = genres.reduce((sum, genre) => sum + avgGenreRatings[genre], 0) / totalGenres;
+    console.log("overallAverage:", overallAverage)
+    // Filter genres with average rating above overall average rating of all genres rated by this user group
+    const distinctGenres = Object.keys(avgGenreRatings)
+    .filter(genre => genre !== givenGenre && avgGenreRatings[genre] < overallAverage);
+
+    return distinctGenres
+  }catch (error) {
+    throw new Error("Failed to fetch recommended genres");
   }
 }
 
@@ -170,5 +258,6 @@ module.exports = {
   getBestRatedGenres,
   getMostReviewedGenres,
   getMostReleasedGenres,
-  getRecommendedGenres,
+  getHighlyRatedGenres,
+  getLowRatedGenres,
 };

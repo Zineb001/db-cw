@@ -11,90 +11,7 @@ import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemText from '@mui/material/ListItemText';
 import Typography from '@mui/material/Typography';
-
-const Container = styled.div`
-  display: flex;
-  flex-direction: column; /* Display as column */
-  align-items: center; /* Center items horizontally */
-  padding: 20px;
-`;
-
-const SectionsContainer = styled.div`
-  background-color: #f2f2f2;
-  display: flex;
-  align-items: center; /* Center its children vertically */
-  width: 100%; /* Take up the entire width */
-  padding: 20px;
-`;
-
-const LeftSection = styled.div`
-  flex: 3;
-  display: flex;
-  flex-direction: column;
-  padding: 0 100px;
-`;
-
-const RightSection = styled.div`
-flex: 1;
-display: flex;
-flex-direction: column;
-padding: 0 100px;
-`;
-
-const Header = styled.header`
-  display: flex;
-  align-items: center;
-  margin-bottom: 20px;
-`;
-
-const PosterContainer = styled.div`
-  background-color: #333333;
-  display: flex;
-  justify-content: center; /* Center content horizontally */
-  align-items: center; /* Center content vertically */
-  padding: 20px;
-  width: 100%; /* Take up the entire horizontal space */
-`;
-
-const Poster = styled.img`
-  max-width: 100%;
-`;
-
-const Title = styled.h2`
-  margin: 0;
-`;
-const ToggleSectionContainer = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-`;
-
-const Toggle = styled.div`
-  padding: 0 100px;
-  display: flex;
-  width: 100%; /* Take up the entire horizontal space */
-  background-color: #ffffff;
-`;
-const Content = styled.div`
-  width:100%;
-  background-color: #ffffff;
-  padding: 20px;
-  height: 800px;
-`;
-
-const HorizontalList = styled(List)`
-    display: flex;
-    flex-wrap: nowrap;
-    overflow-x: auto; /* Enable horizontal scrolling */
-    padding: 10px 0; /* Add some padding */
-    gap: 20px; /* Add some space between items */
-`;
-const TextContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    margin-top: 10px; /* Adjust margin as needed */
-`;
+import './style.css';
 
 const MovieDetails = () => {
     const [movieDetails, setMovieDetails] = useState(null);
@@ -189,17 +106,18 @@ const MovieDetails = () => {
     return (
       <ThemeProvider theme={theme}>
         <NavigationBar />
-        <div>
-          <Container>
+        <div className = "detail-container">
           {isLoading ? (
             <p>Loading movie details...</p>
           ) : movieDetails ? (
             <>
-            <PosterContainer>
-                  <Poster src={movieDetails[0].poster} alt={movieDetails[0].title} />
-            </PosterContainer>
-            <ToggleSectionContainer>
-            <Toggle>
+            <div className="detail-poster-container">
+              <div className="detail-poster">
+                <img src={movieDetails[0].poster} alt={movieDetails[0].title} />
+              </div>
+            </div>
+            <div className="detail-toggle-container">
+            <div className="detail-toggle">
               <Stack direction="row" spacing={2}>
               <Button color="secondary1"
                   sx={{mx: 1, textTransform: 'none', fontSize: '0.875rem' }}
@@ -217,14 +135,14 @@ const MovieDetails = () => {
               Recommendations
               </Button>
               </Stack>
-            </Toggle>
-            </ToggleSectionContainer>
-            <SectionsContainer>
-            <LeftSection>
-            <Header>
-            <Title>{movieDetails[0].title}</Title>
-            </Header> 
-            <Content>    
+            </div>
+            </div>
+            <div className = "sections-container">
+            <div className="left-section">
+            <div className="detail-header">
+            <h2 margin = {0}>{movieDetails[0].title}</h2>
+            </div> 
+            <div className="detail-content">    
             {activeTab === 'synopsis' && (
               <>
                 <p>Synopsis:</p>
@@ -245,47 +163,47 @@ const MovieDetails = () => {
                     <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
                         Viewers who enjoyed this movie, also enjoyed:
                     </Typography>
-                    <HorizontalList>
+                    <List className="horizontal-list">
                 {recommendedMovies.map(movie => (
                 <ListItem key={movie.id} component={Link} to={`/movie-details/${movie.id}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                 onClick={() => setActiveTab('synopsis')}>
-                <Poster src={movie.poster} alt={movie.title} />
-                <TextContainer>
+                <img className="detail-poster" src={movie.poster} alt={movie.title} />
+                <div className="detail-text-container">
                     <ListItemText
                         primaryTypographyProps={{ style: { fontSize: '12px' } }} 
                         primary={movie.title}
                     />
-                </TextContainer>
+                </div>
               </ListItem>
                 ))}
-            </HorizontalList>
+            </List>
             <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
                         Viewers who did not enjoy this movie, also did not enjoy:
                     </Typography>
-                    <HorizontalList>
+                    <List className="horizontal-list">
                 {discouragedMovies.map(movie => (
                 <ListItem key={movie.id} component={Link} to={`/movie-details/${movie.id}`} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                 onClick={() => setActiveTab('synopsis')}>
-                <Poster src={movie.poster} alt={movie.title} />
-                <TextContainer>
+                <img className="detail-poster" src={movie.poster} alt={movie.title} />
+                <div className="detail-text-container">
                     <ListItemText
                         primaryTypographyProps={{ style: { fontSize: '12px' } }} 
                         primary={movie.title}
                     />
-                </TextContainer>
+                </div>
               </ListItem>
                 ))}
-            </HorizontalList>
+            </List>
                 </div>
                 
             ) : (
                 <p></p>
             )}
-            </Content>
-            </LeftSection>
-            <RightSection>
+            </div>
+            </div>
+            <div className="right-section">
             {directorDetails ? (
-                <Content>
+                <div className="detail-content">
                   <Typography sx={{ mt: 4, mb: 2 }} variant="h6" component="div">
                   <p>Also by director: {directorDetails[0].directors.join(', ')}</p>
                   </Typography>
@@ -299,17 +217,16 @@ const MovieDetails = () => {
                     </ListItem>
                   ))}
             </List>
-                </Content>
+                </div>
               ) : (
                 <p>No director details found</p>
               )}
-            </RightSection>
-            </SectionsContainer>
+            </div>
+            </div>
             </>
           ) : (
             <p>No movie details found for ID {movieID}</p>
           )}
-          </Container>
         </div>
       </ThemeProvider>
     );
