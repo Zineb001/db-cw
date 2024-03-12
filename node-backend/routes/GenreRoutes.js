@@ -8,5 +8,6 @@ router.get("/mostPolarizedGenres", genreController.getMostPolarizedGenres)
 router.get("/bestRatedGenres", genreController.getBestRatedGenres)
 router.get("/mostReviewedGenres", genreController.getMostReviewedGenres)
 router.get("/mostReleasedGenres", genreController.getMostReleasedGenres)
-router.get("/recommendedGenres", genreController.getRecommendedGenres)
+router.get("/recommendedGenres", genreController.getHighlyRatedGenres)
+router.get("/discouragedGenres", genreController.getDiscouragedGenres)
 module.exports = router;

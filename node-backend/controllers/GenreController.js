@@ -49,14 +49,24 @@ async function getMostReleasedGenres(req, res) {
     res.status(500).json({ error: "Failed to fetch most released genres" }); 
   }
 }
-async function getRecommendedGenres(req, res) {
+async function getHighlyRatedGenres(req, res) {
   try {
     const { genres } = req.query;
-    const recommendedGenres = await genreService.getRecommendedGenres(genres);
-    res.json(recommendedGenres); 
+    const highlyRatedGenres = await genreService.getHighlyRatedGenres(genres);
+    res.json(highlyRatedGenres); 
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: "Failed to fetch recommended genres" }); 
+  }
+}
+async function getDiscouragedGenres(req, res) {
+  try {
+    const { genres } = req.query;
+    const discouragedGenres = await genreService.getDiscouragedGenres(genres);
+    res.json(discouragedGenres ); 
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ error: "Failed to fetch discouraged genres" }); 
   }
 }
 module.exports = {
@@ -65,5 +75,6 @@ module.exports = {
   getBestRatedGenres,
   getMostReviewedGenres,
   getMostReleasedGenres,
-  getRecommendedGenres,
+  getHighlyRatedGenres,
+  getDiscouragedGenres,
 };
