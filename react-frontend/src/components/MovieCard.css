@@ -1,0 +1,42 @@
+.movie-card {
+    display: flex;
+    background: #fff;
+    margin: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  
+  .movie-poster img {
+    width: 150px;
+    height: 225px;
+    object-fit: cover;
+  }
+  
+  .movie-info {
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  
+  .movie-info h3 {
+    margin: 0;
+    font-size: 1.2rem;
+  }
+  
+  .movie-genres {
+    font-size: 0.9rem;
+    color: #666;
+  }
+  
+  .movie-rating {
+    display: flex;
+    align-items: center;
+    font-size: 1rem;
+  }
+  
+  .movie-rating span {
+    color: #ffcc00; 
+  }
+  

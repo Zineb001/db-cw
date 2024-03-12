@@ -1,24 +1,26 @@
 import * as React from "react";
 import theme from './theme';
 import { ThemeProvider } from '@emotion/react';
-import { Link } from 'react-router-dom';
 import NavigationBar from './NavigationBar';
+import MovieCard from './MovieCard';
 
-function FutureReleases() {
+const FutureReleases = () => {
+  const [movies, setMovies] = useState([]);
+  
+  useEffect(() => {
+    fetch('/api/movies/predictions') // Your API endpoint
+      .then(response => response.json())
+      .then(data => setMovies(data.movies))
+      .catch(error => console.error('Error fetching movies:', error));
+  }, []);
+
   return (
     <ThemeProvider theme={theme}>
     <NavigationBar />
-    <div>
-      <h1>Future Releases</h1>
-      <nav>
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/search-movie">Search Movie</Link></li>
-          <li><Link to="/future-releases">Future Releases</Link></li>
-          <li><Link to="/discover-genres">Discover Genres</Link></li>
-        </ul>
-      </nav>
-      {/* The rest of  this page's content */}
+    <div className="movies-grid">
+      {movies.map(movie => (
+        <MovieCard key={movie.id} movie={movie} />
+      ))}
     </div>
     </ThemeProvider>
   );

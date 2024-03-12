@@ -5,6 +5,11 @@ import theme from './theme.js';
 
 const MovieListComponent = React.memo(({ movies }) => {
 
+    const formatTitle = (title) => {
+      const regex = /^(.+?)\s*\(\d{4}\)$/;
+      const match = title.match(regex);
+      return match ? match[1] : title;
+    }  
     const formatRatingCount = (count) => {
       if (count < 1000) return count; 
       if (count === 1000) return '1k'
@@ -44,7 +49,7 @@ const MovieListComponent = React.memo(({ movies }) => {
             </div>
             <div className="movie-details">
               <h2>
-                <Link to={`/movie-details/${movie.id}`}>{movie.title}</Link>
+                <Link to={`/movie-details/${movie.id}`}>{formatTitle(movie.title)}</Link>
               </h2>
               <p className="movie-release-year">{movie.releasedate}</p>
               <p className="movie-genre">{movie.genre.join(', ')}</p>
