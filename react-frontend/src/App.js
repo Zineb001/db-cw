@@ -20,6 +20,7 @@ function App() {
           <Route path="/future-releases" element={<FutureReleases />} />
           <Route path="discover-genres" element={<DiscoverGenres />} />
           <Route path="movie-details/:movieID" element={<MovieDetails />} />
+          <Route path="personality-analysis" element={<PersonalityAnalysis />} />
         </Routes>
       </Router>
     </ThemeProvider>
