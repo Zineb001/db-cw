@@ -1,10 +1,7 @@
-const Movie = require("../models/Movie");
-const Genre = require("../models/Genre");
+
 const PersonalityGenre = require("../models/PersonalityGenre");
 const PersonalityMovie = require("../models/PersonalityMovie");
 
-const express = require('express');
-const cors = require('cors');
 const { Pool } = require('pg');
 
 

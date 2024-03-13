@@ -1,27 +1,19 @@
 const Movie = require("../models/Movie");
-const Director = require("../models/Director");
-const Genre = require("../models/Genre");
 
-const DirectorService = require("../services/DirectorServices");
-
-const express = require('express');
-const cors = require('cors');
 const { Pool } = require('pg');
 
 
 const pool = new Pool({
   user: 'postgres',
-  host: 'postgres', // This should match the service name in docker-compose.yml
+  host: 'postgres',
   database: 'coursework',
   password: 'mysecretpassword',
   port: 5432,
 });
 
 
-// Define a function to fetch user data from the database
 async function getMovies() {
   try {
-    // Example: Fetch all users from the database
     const client = await pool.connect();
     const result = await client.query('SELECT * FROM VIEW_MOVIE');
     client.release();
@@ -142,7 +134,6 @@ async function getMoviesOfDirectors(directors)
       });
     });
     
-    // Convert the Set back to an array if needed
     const uniqueMovieIdsArray = Array.from(uniqueMovieIds);
     const searchResults = await searchMovies(uniqueMovieIdsArray, null, null, null, null, null, null, null);
     return searchResults;
@@ -151,7 +142,6 @@ async function getMoviesOfDirectors(directors)
 
 async function getTags() {
   try {
-    // Example: Fetch all users from the database
     const client = await pool.connect();
     const result = await client.query('SELECT DISTINCT unnest("tags") AS tag FROM VIEW_MOVIE');
     client.release();
@@ -224,7 +214,6 @@ async function getMovieDiscouragements(given_movie_id) {
 
 async function getPredictedMovies() {
   try {
-    // Example: Fetch all users from the database
     const client = await pool.connect();
     const movieIds = [592, 2028, 5952, 588];
     const query = `
