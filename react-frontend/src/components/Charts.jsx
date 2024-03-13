@@ -254,28 +254,43 @@ export function GenrePieChart ({ genreData }) {
           ],
           hoverOffset: 4,
           cutout: '80%',
+          borderWidth: 0,
         },
       ],
     };
     const defaultOptions = {
-        maintainAspectRatio: true,
-        aspectRatio: 1,
-        plugins: {
-            legend: {
-                position: 'right',
-            },
-        },
-        layout: {
-            padding: {
-                left: 50,
-                right: 50,
-            },
-        },
-    };
-      
+      maintainAspectRatio: true,
+      aspectRatio: 1,
+      plugins: {
+          legend: {
+              position: 'right',
+              labels: {
+                color: 'white', 
+                font: {
+                  size: 12 
+                }
+              }
+          },
+          tooltip: {
+              titleFont: {
+                  size: 14, 
+                  color: 'white', 
+              },
+              bodyFont: {
+                  size: 12, 
+                  color: 'white', 
+              }
+          }
+      },
+      layout: {
+          padding: {
+              left: 50,
+              right: 50,
+          },
+      },
 
-  
-    return <Pie data={data} options={defaultOptions}/>;
+    };
+  return <Pie data={data} options={defaultOptions}/>;
   };
 
 export const GenreHistogram = ({ data, selectedGenre }) => {
@@ -302,12 +317,88 @@ export const GenreHistogram = ({ data, selectedGenre }) => {
   
     const options = {
       scales: {
-        y: { 
+        x: {
+          ticks: {
+            color: 'white', 
+          },
+          title: {
+            display: true,
+            text: 'Genres',
+            color: 'white',
+          },
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)', 
+          }
+        },
+        y: {
           beginAtZero: false, 
           suggestedMin: 3, 
           suggestedMax: 4, 
+          ticks: {
+            color: 'white', 
+          },
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)', 
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: 'white'
+          }
         }
       }
     };
     return <Bar data={chartData} options={options}/>;
+  };
+
+export const GenrePersonalitysHistogram = ({ personalityGenres, selectedTrait }) => {
+    const chartData = {
+      labels: personalityGenres.map(genre => genre.genre),
+      datasets: [
+        {
+          label: `Average ${selectedTrait}`,
+          data: personalityGenres.map(genre => genre[`avg_${selectedTrait.toLowerCase().replace(' ', '_')}`]),
+          backgroundColor: 'rgba(54, 162, 235, 0.5)',
+          borderColor: 'rgba(54, 162, 235, 1)',
+          borderWidth: 1,
+        },
+      ],
+    };
+  
+    const options = {
+      scales: {
+        x: {
+          ticks: {
+            color: 'white', 
+          },
+          title: {
+            display: true,
+            text: 'Genres',
+            color: 'white',
+          },
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)', 
+          }
+        },
+        y: {
+          ticks: {
+            color: 'white', 
+          },
+          grid: {
+            color: 'rgba(255, 255, 255, 0.1)', 
+          }
+        }
+      },
+      plugins: {
+        legend: {
+          labels: {
+            color: 'white'
+          }
+        }
+      }
+    };
+
+    return <Bar data={chartData} options={options} />;
   };
