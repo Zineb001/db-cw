@@ -1,12 +1,7 @@
 import * as React from "react";
 import { useState, useEffect } from 'react';
-import { FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText, OutlinedInput, Autocomplete, TextField, Box, Button } from '@mui/material';
+import { FormControl, InputLabel, Select, MenuItem, Checkbox, ListItemText, OutlinedInput, Autocomplete, TextField, Box, Button, Rating, Typography } from '@mui/material';
 import './style.css';
-
-const mockGenres = ["Action", "Comedy", "Drama"];
-const mockTags = ["New Release", "Classic", "Trending", "prison"];
-const mockCast = ["Bob Penny", "Steve Wyatt", "Anna Mucha", "Harris Savides"];
-const mockDirectors = ["Christopher Nolan", "Director B", "Director C", "Director D"];
 
 const FilterComponent = ({ filters, setFilters }) => {
     const [genres, setGenres] = useState([]);
@@ -104,12 +99,14 @@ const FilterComponent = ({ filters, setFilters }) => {
     
     return (
         <>
-            <div>Filters Test</div>
                     <h2>Filters</h2>
-                    <div>
+                    <div className="dark-theme">
+                      <div className="padding">
                         {isFilterSelected() && <button onClick={handleResetFilters}>Reset Filters</button>}
                         <h3>Genres</h3>
-                        <FormControl sx={{ m: 1, width: 300 }}>
+                        <FormControl 
+                        
+                        sx={{ m: 1, width: 200, '.MuiInputBase-root': { bgcolor: 'background.paper', color: 'text.primary' } }}>
                         <InputLabel id="genres-dropdown" variant="standard">Genres</InputLabel>
                         <Select
                             labelId="genres-dropdown-label"
@@ -124,6 +121,7 @@ const FilterComponent = ({ filters, setFilters }) => {
                                   style: {
                                     backgroundColor: '#E0E0E0', 
                                     maxHeight: '300px', 
+                                    maxWidth: 200,
                                   },
                                 },
                               }}
@@ -131,11 +129,28 @@ const FilterComponent = ({ filters, setFilters }) => {
                                 '.MuiInputBase-input': {
                                   height: 'auto',
                                   fontSize: '0.875rem',
+                                  backgroundColor: '#333', 
+                                  color: 'white', 
+                                  '&:focus': {
+                                    backgroundColor: '#333',
+                                  },
                                 },
                                 '.MuiSelect-select': {
                                   '&:focus': {
-                                    backgroundColor: '#E0E0E0', 
+                                    backgroundColor: '#333', 
                                   },
+                                },
+                                '.MuiOutlinedInput-notchedOutline': {
+                                  borderColor: 'white', 
+                                },
+                                '&:hover .MuiOutlinedInput-notchedOutline': {
+                                  borderColor: 'white', 
+                                },
+                                '&.Mui-focused .MuiOutlinedInput-notchedOutline': {
+                                  borderColor: 'white', 
+                                },
+                                'svg': {
+                                  color: 'white', 
                                 },
                               }}
                         >
@@ -154,7 +169,7 @@ const FilterComponent = ({ filters, setFilters }) => {
                             getOptionLabel={(option) => option} 
                             value={filters.tags || []}
                             onChange={(event, newValue) => handleAutocompleteChange('tags', newValue)}
-                            renderInput={(params) => <TextField {...params} label="Tags" />}
+                            renderInput={(params) => <TextField {...params} label="  Tags" sx={{paddingLeft: 1, width: '200px', input: { color: 'text.primary' }, '.MuiOutlinedInput-root': { bgcolor: 'background.paper' } }}/>}
                         />
                         <h3>Cast</h3>
                         <Autocomplete
@@ -163,7 +178,7 @@ const FilterComponent = ({ filters, setFilters }) => {
                             getOptionLabel={(option) => option}
                             value={filters.cast || []}
                             onChange={(event, newValue) => handleAutocompleteChange('cast', newValue)}
-                            renderInput={(params) => <TextField {...params} label="Cast" />}
+                            renderInput={(params) => <TextField {...params} label="  Cast" sx={{paddingLeft: 1, width: '200px', input: { color: 'text.primary' }, '.MuiOutlinedInput-root': { bgcolor: 'background.paper' } }}/>}
                         />
                         <h3>Directors</h3>
                         <Autocomplete
@@ -172,7 +187,7 @@ const FilterComponent = ({ filters, setFilters }) => {
                             getOptionLabel={(option) => option}
                             value={filters.directors || []}
                             onChange={(event, newValue) => handleAutocompleteChange('directors', newValue)}
-                            renderInput={(params) => <TextField {...params} label="Directors" />}
+                            renderInput={(params) => <TextField {...params} label="  Directors" sx={{paddingLeft: 1, width: '200px', input: { color: 'text.primary' }, '.MuiOutlinedInput-root': { bgcolor: 'background.paper' } }}/>}
                         />
                         <h3>Release Year</h3>
                         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -181,37 +196,78 @@ const FilterComponent = ({ filters, setFilters }) => {
                             options={years}
                             value={startYear}
                             onChange={(event, newValue) => setStartYear(newValue)}
-                            renderInput={(params) => <TextField {...params} label="From Year" />}
+                            renderInput={(params) => <TextField {...params} label="  From" sx={{paddingLeft: 1, width: '100px', input: { color: 'text.primary' }, '.MuiOutlinedInput-root': { bgcolor: 'background.paper' } }}/>}
                             disableClearable
                             />
                             <Autocomplete
                             options={years}
                             value={endYear}
                             onChange={(event, newValue) => setEndYear(newValue)}
-                            renderInput={(params) => <TextField {...params} label="To Year" />}
+                            renderInput={(params) => <TextField {...params} label="  To" sx={{paddingLeft: 1, width: '100px', input: { color: 'text.primary' }, '.MuiOutlinedInput-root': { bgcolor: 'background.paper' } }} />}
                             disableClearable
                             />
                         </Box>
-                        <Button variant="contained" onClick={handleSubmitYear}>Submit</Button>
+                        <Button variant="contained" sx={{paddingLeft: 1, width: '220px', bgcolor: 'primary.light', color: 'text.primary', '&:hover': { bgcolor: 'primary.main' } }} onClick={handleSubmitYear}>Submit</Button>
                         </Box>
                         <h3>Rating</h3>
-                        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, width: 300 }}>
-                        <Autocomplete
-                            options={ratings}
-                            value={minRating}
-                            onChange={(event, newValue) => setMinRating(newValue)}
-                            renderInput={(params) => <TextField {...params} label="Min Rating" />}
-                            disableClearable
-                        />
-                        <Autocomplete
-                            options={ratings}
-                            value={maxRating}
-                            onChange={(event, newValue) => setMaxRating(newValue)}
-                            renderInput={(params) => <TextField {...params} label="Max Rating" />}
-                            disableClearable
-                        />
-                        <Button variant="contained" onClick={handleSubmitRating}>Submit</Button>
+                        <Box sx={{display: 'flex', flexDirection: 'column', gap: 2, width: 200, alignItems: 'center' }}>
+                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                            <Typography component="legend">Min Rating</Typography>
+                            <Rating
+                              name="min-rating"
+                              value={minRating}
+                              onChange={(event, newValue) => {
+                                setMinRating(newValue);
+                              }}
+                              sx={{
+                                '.MuiRating-iconEmpty svg': {
+                                  fill: 'transparent',
+                                  stroke: 'white',
+                                },
+                                '.MuiRating-iconFilled svg': {
+                                  fill: 'gold', 
+                                  stroke: 'white',
+                                },
+                                '.MuiRating-iconHover svg': {
+                                  fill: 'lightgray', 
+                                  stroke: 'white',
+                                }
+                              }}
+                            />
+                          </Box>
+                          <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 1 }}>
+                            <Typography component="legend">Max Rating</Typography>
+                            <Rating
+                              name="max-rating"
+                              value={maxRating}
+                              onChange={(event, newValue) => {
+                                setMaxRating(newValue);
+                              }}
+                              sx={{
+                                '.MuiRating-iconEmpty svg': {
+                                  fill: 'transparent',
+                                  stroke: 'white',
+                                },
+                                '.MuiRating-iconFilled svg': {
+                                  fill: 'gold', 
+                                  stroke: 'white',
+                                },
+                                '.MuiRating-iconHover svg': {
+                                  fill: 'lightgray', 
+                                  stroke: 'white',
+                                }
+                              }}
+                            />
+                          </Box>
+                          <Button 
+                            variant="contained" 
+                            sx={{width: '200px', bgcolor: 'primary.light', color: 'text.primary', '&:hover': { bgcolor: 'primary.main' } }} 
+                            onClick={handleSubmitRating}>
+                              Submit
+                          </Button>
                         </Box>
+
+                      </div>
                 </div>
         </>
     );
