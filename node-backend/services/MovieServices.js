@@ -17,11 +17,8 @@ const pool = new Pool({
   port: 5432,
 });
 
-
-// Define a function to fetch user data from the database
 async function getMovies() {
   try {
-    // Example: Fetch all users from the database
     const client = await pool.connect();
     const result = await client.query('SELECT * FROM VIEW_MOVIE');
     client.release();
@@ -64,51 +61,47 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     const castList = cast ? cast.split(',') : [];
     const ratings =  rating ? rating.split(',') : [];
     const tags = tag ? tag.split(',') : [];
-   
+    
     let query = 'SELECT * FROM VIEW_MOVIE WHERE TRUE';
-
+    const values = [];
+    
     if (movieIDs && movieIDs.length > 0) {
-      query += ` AND "id" = ANY(ARRAY[${movieIDs}])`;
+      query += ` AND "id" = ANY($${values.push(movieIDs)})`;
     }
-
+    
     if (title) {
-      query += ` AND LOWER("title") LIKE LOWER('%${title}%')`;
+      query += ` AND LOWER("title") LIKE LOWER($${values.push(`%${title}%`)})`;
     }
-
+    
     if (releaseYears && releaseYears.length > 0) {
-      query += ` AND "releasedate" = ANY(ARRAY[${releaseYears}])`;
-      console.log("releaseYears:",releaseYears)
+      query += ` AND "releasedate" = ANY($${values.push(releaseYears)})`;
     }
-
+    
     if (directorsList && directorsList.length > 0) {
-      query += ` AND ARRAY(SELECT unnest("directors")::text) && ARRAY[${directorsList.map(director => `'${director}'`).join(', ')}]`;
-      console.log("director: ", directorsList);
+      query += ` AND ARRAY(SELECT unnest("directors")::text) && ARRAY[${directorsList.map((_, index) => `$${values.push(directorsList[index])}`).join(', ')}]`;
     }
-
+    
     if (castList && castList.length > 0) {
-      query += ` AND ARRAY(SELECT unnest("actors")::text) && ARRAY[${castList.map(actor => `'${actor}'`).join(', ')}]`
-      console.log("actors: ", castList);
+      query += ` AND ARRAY(SELECT unnest("actors")::text) && ARRAY[${castList.map((_, index) => `$${values.push(castList[index])}`).join(', ')}]`;
     }
-
+    
     if (genres && genres.length > 0) {
-      const genresString = genres.map(genre => `'${genre}'`).join(', ');
-      query += ` AND ARRAY(SELECT unnest("genre")::text) && ARRAY[${genresString}]`;
-      console.log("genres:", genres);
+      query += ` AND ARRAY(SELECT unnest("genre")::text) && ARRAY[${genres.map((_, index) => `$${values.push(genres[index])}`).join(', ')}]`;
     }
-
-    if (rating) {
-      query += ` AND "averagerating" BETWEEN ${parseFloat(ratings[0])} AND ${parseFloat(ratings[1])}`;
-      console.log("rating ", rating)
+    
+    if (ratings && ratings.length === 2) {
+      query += ` AND "averagerating" BETWEEN $${values.push(parseFloat(ratings[0]))} AND $${values.push(parseFloat(ratings[1]))}`;
     }
-
+    
     if (tags && tags.length > 0) {
-      query += ` AND ARRAY(SELECT lower(unnest("tags"))) && ARRAY[${tags.map(tag => `'${tag}'`).join(', ')}]`
-      console.log("tags: ",tags);
+      query += ` AND ARRAY(SELECT lower(unnest("tags"))) && ARRAY[${tags.map((_, index) => `$${values.push(tags[index])}`).join(', ')}]`;
     }
-
+    
     console.log("query: ", query);
+    console.log("values: ", values);
+    
     const client = await pool.connect();
-    const { rows } = await client.query(query);
+    const { rows } = await client.query(query, values);
     client.release();
 
     const searchResults = rows.map(row => new Movie(
@@ -151,7 +144,6 @@ async function getMoviesOfDirectors(directors)
 
 async function getTags() {
   try {
-    // Example: Fetch all users from the database
     const client = await pool.connect();
     const result = await client.query('SELECT DISTINCT unnest("tags") AS tag FROM VIEW_MOVIE');
     client.release();
@@ -164,25 +156,28 @@ async function getTags() {
 }
 
 async function getMovieRecommendations(given_movie_id) {
-  try {
-    const client = await pool.connect();
-    //given a movie_id, return other movie ids where the users,
-    //who have watched the given movie_id and rated it above their average rating
-    //also rated those movies above their average rating
-    const query = `
-    SELECT DISTINCT m.id
-    FROM VIEW_MOVIE m
-    JOIN VIEW_MOVIE_RATING r1 ON r1."movie_id" = m.id
-    JOIN VIEW_USER_RATING u1 ON u1.id = r1."user_id"
-    JOIN VIEW_MOVIE_RATING r2 ON r2."user_id" = r1."user_id"
-    JOIN VIEW_MOVIE m2 ON r2."movie_id" = m2.id
-    JOIN VIEW_USER_RATING u2 ON u2.id = r2."user_id"
-    WHERE m.id != ${given_movie_id}
-    AND r1."rating" = 5
-    AND m2.id = ${given_movie_id}
-    AND r2."rating" > u2."averagerating"
-    `
-    const result = await client.query(query);
+
+      try {
+        const client = await pool.connect();
+        //given a movie_id, return other movie ids where the users,
+        //who have watched the given movie_id and rated it above their average rating
+        //also rated those movies above their average rating
+        const query = `
+        SELECT DISTINCT m.id
+        FROM VIEW_MOVIE m
+        JOIN VIEW_MOVIE_RATING r1 ON r1."movie_id" = m.id
+        JOIN VIEW_USER_RATING u1 ON u1.id = r1."user_id"
+        JOIN VIEW_MOVIE_RATING r2 ON r2."user_id" = r1."user_id"
+        JOIN VIEW_MOVIE m2 ON r2."movie_id" = m2.id
+        JOIN VIEW_USER_RATING u2 ON u2.id = r2."user_id"
+        WHERE m.id != $1
+        AND r1."rating" = 5
+        AND m2.id = $1
+        AND r2."rating" > u2."averagerating"
+    `;
+    const values = [given_movie_id];
+
+    const result = await client.query(query, values);
     client.release();
     const movieIDs = result.rows.map(row => row.id);
     const movieResults = await searchMovies(movieIDs, null, null, null, null, null, null, null);
@@ -206,12 +201,13 @@ async function getMovieDiscouragements(given_movie_id) {
     JOIN VIEW_MOVIE_RATING r2 ON r2."user_id" = r1."user_id"
     JOIN VIEW_MOVIE m2 ON r2."movie_id" = m2.id
     JOIN VIEW_USER_RATING u2 ON u2.id = r2."user_id"
-    WHERE m.id != ${given_movie_id}
+    WHERE m.id != $1
     AND r1."rating" <2
-    AND m2.id = ${given_movie_id}
+    AND m2.id = $1
     AND r2."rating" < u2."averagerating"
     `
-    const result = await client.query(query);
+    const values = [given_movie_id];
+    const result = await client.query(query, values);
     client.release();
     const movieIDs = result.rows.map(row => row.id);
     const movieResults = await searchMovies(movieIDs, null, null, null, null, null, null, null);
@@ -230,9 +226,10 @@ async function getPredictedMovies() {
     const query = `
     SELECT * 
     FROM VIEW_MOVIE 
-    WHERE id IN (${movieIds.join(',')})
-`;
-    const { rows } = await client.query(query);
+    WHERE id = ANY($1)
+  `;
+    const values = [movieIds];
+    const { rows } = await client.query(query, values);
     const movies = rows.map(row => new Movie(
         row.id,
         row.title,
