@@ -167,12 +167,12 @@ async function getMovieRecommendations(given_movie_id) {
     JOIN VIEW_MOVIE_RATING r2 ON r2."user_id" = r1."user_id"
     JOIN VIEW_MOVIE m2 ON r2."movie_id" = m2.id
     JOIN VIEW_USER_RATING u2 ON u2.id = r2."user_id"
-    WHERE m.id != ${given_movie_id}
+    WHERE m.id != $1
     AND r1."rating" = 5
-    AND m2.id = ${given_movie_id}
+    AND m2.id = $1
     AND r2."rating" > u2."averagerating"
     `
-    const result = await client.query(query);
+    const result = await client.query(query, [given_movie_id]);
     client.release();
     const movieIDs = result.rows.map(row => row.id);
     const movieResults = await searchMovies(movieIDs, null, null, null, null, null, null, null);
@@ -196,12 +196,12 @@ async function getMovieDiscouragements(given_movie_id) {
     JOIN VIEW_MOVIE_RATING r2 ON r2."user_id" = r1."user_id"
     JOIN VIEW_MOVIE m2 ON r2."movie_id" = m2.id
     JOIN VIEW_USER_RATING u2 ON u2.id = r2."user_id"
-    WHERE m.id != ${given_movie_id}
+    WHERE m.id != $1
     AND r1."rating" <2
-    AND m2.id = ${given_movie_id}
+    AND m2.id = $1
     AND r2."rating" < u2."averagerating"
     `
-    const result = await client.query(query);
+    const result = await client.query(query, [given_movie_id]);
     client.release();
     const movieIDs = result.rows.map(row => row.id);
     const movieResults = await searchMovies(movieIDs, null, null, null, null, null, null, null);

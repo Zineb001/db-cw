@@ -18,9 +18,9 @@ async function getDirectorsByMovieID(movieID) {
     const query = `
       SELECT *
       FROM VIEW_DIRECTOR
-      WHERE ${movieID} = ANY(movieids)`;
+      WHERE $1= ANY(movieids)`;
 
-    const { rows } = await pool.query(query);
+    const { rows } = await pool.query(query, [movieID]);
     client.release();
     const directors = rows.map(row => new Director(row.id, row.name, row.movieids));
     return directors;
