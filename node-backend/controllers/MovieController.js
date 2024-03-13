@@ -4,20 +4,18 @@ const Movie = require("../models/Movie");
 const { move } = require("../routes/MovieRoutes");
 
 
-// Controller function to handle GET request for users
 async function getMovies(req, res) {
   try {
-    const movies = await movieService.getMovies(); // Call the getUsers function from the userService
-    res.json(movies); // Send the users as JSON response
+    const movies = await movieService.getMovies();
+    res.json(movies); 
   } catch (error) {
     console.error(error);
-    res.status(500).json({ error: "Failed to fetch movies" }); // Send error response
+    res.status(500).json({ error: "Failed to fetch movies" });
   }
 }
 
 async function searchMovies(req, res) {
   try {
-    //for testing: /api/searchMovies?title=&releaseYear=&cast=&genre=&rating=2&tags=
     const { title, releaseYear, directors, cast, genres, rating, tags } = req.query;
     const searchResults = await movieService.searchMovies(
       null,
@@ -41,7 +39,6 @@ async function searchMovies(req, res) {
 
 async function getMoviesOfSameDirector(req, res) {
   try {
-    //for testing: 
     const { movieID } = req.query;
     const directors = await directorService.getDirectorsByMovieID(movieID);
     const searchResults= await movieService.getMoviesOfDirectors(directors);

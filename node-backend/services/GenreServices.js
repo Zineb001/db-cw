@@ -1,15 +1,12 @@
-const Movie = require("../models/Movie");
-const Director = require("../models/Director");
+
 const Genre = require("../models/Genre");
 
-const express = require('express');
-const cors = require('cors');
 const { Pool } = require('pg');
 
 
 const pool = new Pool({
   user: 'postgres',
-  host: 'postgres', // This should match the service name in docker-compose.yml
+  host: 'postgres', 
   database: 'coursework',
   password: 'mysecretpassword',
   port: 5432,
@@ -18,7 +15,6 @@ const pool = new Pool({
 async function getGenres() {
   try {
 
-      // Fetch genres
       const client = await pool.connect();
       const result = await client.query('SELECT * FROM VIEW_GENRE');
       client.release();
@@ -42,9 +38,8 @@ async function getGenres() {
 
 async function getGenreNames() {
   try {
-    // Fetch genres
     const client = await pool.connect();
-    const result = await client.query('SELECT name FROM VIEW_GENRE'); // Only select the name column
+    const result = await client.query('SELECT name FROM VIEW_GENRE'); 
     client.release();
     
     const genreNames = result.rows.map(row => row.name);
@@ -57,7 +52,6 @@ async function getGenreNames() {
 
 async function getMostPolarizedGenres() {
   try {
-    // Fetch genres
     const genres = await getGenres();
     genres.sort((a, b) => b.sdrating - a.sdrating);
     return genres;
@@ -68,7 +62,6 @@ async function getMostPolarizedGenres() {
 
 async function getBestRatedGenres() {
   try {
-    // Fetch genres
     const genres = await getGenres();
     genres.sort((a, b) => b.averagerating - a.averagerating);
     return genres;
@@ -79,7 +72,6 @@ async function getBestRatedGenres() {
 
 async function getMostReviewedGenres() {
   try {
-    // Fetch genres
     const genres = await getGenres();
     genres.sort((a, b) => b.reviewscount - a.reviewscount);
     return genres;
@@ -89,7 +81,6 @@ async function getMostReviewedGenres() {
 }
 async function getMostReleasedGenres() {
   try {
-    // Fetch genres
     const genres = await getGenres();
     genres.sort((a, b) => b.releasescount- a.releasescount);
     return genres;
@@ -98,13 +89,13 @@ async function getMostReleasedGenres() {
   }
 }
 
-async function executeSQLQuery(query) {
+async function executeSQLQuery(query, values) {
   const client = await pool.connect();
   try {
-      const result = await client.query(query);
-      return result.rows;
+    const result = await client.query(query, values);
+    return result.rows;
   } finally {
-      client.release();
+    client.release();
   }
 }
 
@@ -112,37 +103,47 @@ async function getHighlyRatedGenres(givenGenre)
 {
   try{ 
     // Step 1: Select Movie IDs with Given Genre 
-    const movieIds = await executeSQLQuery(`
-            SELECT id 
-            FROM VIEW_MOVIE 
-            WHERE '${givenGenre}' = ANY(genre);
-        `);
-
+    const movieIds = await executeSQLQuery(
+      `
+      SELECT id 
+      FROM VIEW_MOVIE 
+      WHERE $1 = ANY(genre);
+      `,
+      [givenGenre]
+    );
     // Extract movie IDs
     const movieIdArray = movieIds.map(row => row.id);
 
     // Step 2: Select Distinct Users who Rated Movies of 5 Stars
-    const highlyRatedUsers = await executeSQLQuery(`
-            SELECT DISTINCT user_id 
-            FROM VIEW_MOVIE_RATING 
-            WHERE movie_id IN (${movieIdArray.join(',')})
-            GROUP BY user_id
-            HAVING MIN(CASE WHEN movie_id IN (${movieIdArray.join(',')}) THEN rating ELSE NULL END) = 5;
-        `);
+    const highlyRatedUsers = await executeSQLQuery(
+      `
+      SELECT DISTINCT user_id 
+      FROM VIEW_MOVIE_RATING 
+      WHERE movie_id = ANY($1)
+      GROUP BY user_id
+      HAVING MIN(CASE WHEN movie_id = ANY($1) THEN rating ELSE NULL END) = 5;
+      `,
+      [movieIdArray]
+    );
       
     // Extract user IDs
     const userIds = highlyRatedUsers.map(row => row.user_id);
 
     // Step 3: Get Distinct Genres of Highly Rated Movies by Users
-    const highlyRatedMovies = await executeSQLQuery(`
-    SELECT id, genre 
-    FROM VIEW_MOVIE 
-    WHERE id IN (
-        SELECT movie_id
-        FROM VIEW_MOVIE_RATING
-        WHERE user_id IN (${userIds.map(id => `'${id}'`).join(',')})
-    )
-    `);
+    const highlyRatedMovies = await executeSQLQuery(
+      `
+      SELECT id, genre 
+      FROM VIEW_MOVIE 
+      WHERE id IN (
+          SELECT movie_id
+          FROM VIEW_MOVIE_RATING
+          WHERE user_id IN (
+              SELECT UNNEST($1::int[])
+          )
+      )
+      `,
+      [userIds]
+    );
 
     // Calculate average rating for each genre
     const genreRatings = {};
@@ -157,13 +158,17 @@ async function getHighlyRatedGenres(givenGenre)
 
     const avgGenreRatings = {};
     for (const genre in genreRatings) {
-    const movieIds = genreRatings[genre].join(',');
-    const ratings = await executeSQLQuery(`
-        SELECT AVG(rating) AS avg_rating
-        FROM VIEW_MOVIE_RATING
-        WHERE movie_id IN (${movieIds})
-    `);
-    avgGenreRatings[genre] = ratings[0].avg_rating;
+    const ratings = await executeSQLQuery(
+      `
+      SELECT AVG(rating) AS avg_rating
+      FROM VIEW_MOVIE_RATING
+      WHERE movie_id IN (
+        SELECT UNNEST($1::int[])
+      )
+      `,
+      [genreRatings[genre]]
+    );
+      avgGenreRatings[genre] = ratings[0].avg_rating;
     }
     // Calculate average ratings over all genres average ratings by this user group
     const genres = Object.keys(avgGenreRatings);
@@ -183,37 +188,48 @@ async function getLowRatedGenres(givenGenre)
 {
   try{ 
     // Step 1: Select Movie IDs with Given Genre 
-    const movieIds = await executeSQLQuery(`
-            SELECT id 
-            FROM VIEW_MOVIE 
-            WHERE '${givenGenre}' = ANY(genre);
-        `);
+    const movieIds = await executeSQLQuery(
+      `
+      SELECT id 
+      FROM VIEW_MOVIE 
+      WHERE $1 = ANY(genre);
+      `,
+      [givenGenre]
+    );
 
     // Extract movie IDs
     const movieIdArray = movieIds.map(row => row.id);
 
     // Step 2: Select Distinct Users who Rated Movies below 3 stars
-    const lowRatedUsers = await executeSQLQuery(`
-            SELECT DISTINCT user_id 
-            FROM VIEW_MOVIE_RATING 
-            WHERE movie_id IN (${movieIdArray.join(',')})
-            GROUP BY user_id
-            HAVING MAX(CASE WHEN movie_id IN (${movieIdArray.join(',')}) THEN rating ELSE NULL END) < 3;
-        `);
+    const lowRatedUsers = await await executeSQLQuery(
+      `
+      SELECT DISTINCT user_id 
+      FROM VIEW_MOVIE_RATING 
+      WHERE movie_id = ANY($1)
+      GROUP BY user_id
+      HAVING MIN(CASE WHEN movie_id = ANY($1) THEN rating ELSE NULL END) <3;
+      `,
+      [movieIdArray]
+    );
       
     // Extract user IDs
     const userIds = lowRatedUsers.map(row => row.user_id);
 
     // Step 3: Get Distinct Genres of Low Rated Movies by Users
-    const lowRatedMovies = await executeSQLQuery(`
-    SELECT id, genre 
-    FROM VIEW_MOVIE 
-    WHERE id IN (
-        SELECT movie_id
-        FROM VIEW_MOVIE_RATING
-        WHERE user_id IN (${userIds.map(id => `'${id}'`).join(',')})
-    )
-    `);
+    const lowRatedMovies = await executeSQLQuery(
+      `
+      SELECT id, genre 
+      FROM VIEW_MOVIE 
+      WHERE id IN (
+          SELECT movie_id
+          FROM VIEW_MOVIE_RATING
+          WHERE user_id IN (
+              SELECT UNNEST($1::int[])
+          )
+      )
+      `,
+      [userIds]
+    );
 
     // Calculate average rating for each genre
     const genreRatings = {};
@@ -229,19 +245,22 @@ async function getLowRatedGenres(givenGenre)
     const avgGenreRatings = {};
     for (const genre in genreRatings) {
     const movieIds = genreRatings[genre].join(',');
-    const ratings = await executeSQLQuery(`
-        SELECT AVG(rating) AS avg_rating
-        FROM VIEW_MOVIE_RATING
-        WHERE movie_id IN (${movieIds})
-    `);
+    const ratings =  await executeSQLQuery(
+      `
+      SELECT AVG(rating) AS avg_rating
+      FROM VIEW_MOVIE_RATING
+      WHERE movie_id IN (
+        SELECT UNNEST($1::int[])
+      )
+      `,
+      [genreRatings[genre]]
+    );
     avgGenreRatings[genre] = ratings[0].avg_rating;
     }
-    console.log("avgGenreRatings:", avgGenreRatings)
     // Calculate average ratings over all genres average ratings by this user group
     const genres = Object.keys(avgGenreRatings);
     const totalGenres = genres.length;
     const overallAverage = genres.reduce((sum, genre) => sum + avgGenreRatings[genre], 0) / totalGenres;
-    console.log("overallAverage:", overallAverage)
     // Filter genres with average rating above overall average rating of all genres rated by this user group
     const distinctGenres = Object.keys(avgGenreRatings)
     .filter(genre => genre !== givenGenre && avgGenreRatings[genre] < overallAverage);
