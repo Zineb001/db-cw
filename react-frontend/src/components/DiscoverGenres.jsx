@@ -6,6 +6,7 @@ import theme from './theme';
 import './style.css';
 import NavigationBar from './NavigationBar';
 import { Select, MenuItem, FormControl, InputLabel, Box } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import {PolarizingGenresHistogram, BestRatedGenresHistogram, MostReviewedGenresHistogram, MostReleasedGenresHistogram, PolarizingGenresLeaderboard, BestRatedGenresLeaderboard, MostReviewedGenresLeaderboard, MostReleasedGenresLeaderboard, GenrePieChart, GenreHistogram} from './Charts';
 
 function calculateRatingsByGenre(movies) {
@@ -188,7 +189,9 @@ function DiscoverGenres() {
     <NavigationBar />
     <div>
       {isLoading ? (
-        <p>Loading...</p>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <CircularProgress sx={{ color: 'black' }} size={60} />
+        </div>
       ) : (
         <>
         <div className="vertical-stack">
