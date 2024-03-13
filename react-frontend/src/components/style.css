@@ -343,6 +343,11 @@
   background-color: #ffffff;
 }
 
+.Bold14 {
+  font-size: 14px;
+  font-weight: bold;
+}
+
 .personality-container {
   display: flex;
   align-items: center; 
