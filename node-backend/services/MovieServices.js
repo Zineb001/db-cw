@@ -94,7 +94,7 @@ async function searchMovies(movieIDs, title, releaseYear, directors, cast, genre
     }
 
     if (tags && tags.length > 0) {
-      query += ` AND ARRAY(SELECT lower(unnest("tags"))) && ARRAY[${tags.map(tag => `'${tag}'`).join(', ')}]`
+      query += ` AND ARRAY(SELECT unnest("tags")::text) && ARRAY[${tags.map(tag => `'${tag}'`).join(', ')}]`
       console.log("tags: ",tags);
     }
 
@@ -217,11 +217,12 @@ async function getPredictedMovies() {
     const client = await pool.connect();
     const movieIds = [592, 2028, 5952, 588];
     const query = `
-    SELECT * 
-    FROM VIEW_MOVIE 
-    WHERE id IN (${movieIds.join(',')})
-`;
-    const { rows } = await client.query(query);
+      SELECT * 
+      FROM VIEW_MOVIE 
+      WHERE id = ANY($1)
+    `;
+    const values = [movieIds];
+    const { rows } = await client.query(query, values);
     const movies = rows.map(row => new Movie(
         row.id,
         row.title,
