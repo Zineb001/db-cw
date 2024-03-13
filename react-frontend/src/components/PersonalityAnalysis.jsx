@@ -7,6 +7,7 @@ import { useState, useEffect} from 'react';
 import { Select, MenuItem, FormControl, InputLabel, Box, Autocomplete, TextField } from '@mui/material';
 import { Bar } from 'react-chartjs-2';
 import {GenrePersonalitysHistogram} from './Charts'; 
+import CircularProgress from '@mui/material/CircularProgress';
 import './style.css';
 
 function PersonalityAnalysis() {
@@ -116,7 +117,9 @@ function PersonalityAnalysis() {
     <NavigationBar />
     <div>
       {isLoading ? (
-        <p>Loading...</p>
+        <div style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100vh' }}>
+          <CircularProgress sx={{ color: 'black' }} size={60} />
+        </div>
       ) : (
       <>
       <div sx={{paddingBottom: 200}}>
