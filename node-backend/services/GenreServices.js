@@ -4,7 +4,7 @@ const { Pool } = require('pg');
 
 const pool = new Pool({
   user: 'postgres',
-  host: 'postgres', // This should match the service name in docker-compose.yml
+  host: 'postgres', 
   database: 'coursework',
   password: 'mysecretpassword',
   port: 5432,
@@ -12,8 +12,6 @@ const pool = new Pool({
 
 async function getGenres() {
   try {
-
-      // Fetch genres
       const client = await pool.connect();
       const result = await client.query('SELECT * FROM VIEW_GENRE');
       client.release();
@@ -37,9 +35,8 @@ async function getGenres() {
 
 async function getGenreNames() {
   try {
-    // Fetch genres
     const client = await pool.connect();
-    const result = await client.query('SELECT name FROM VIEW_GENRE'); // Only select the name column
+    const result = await client.query('SELECT name FROM VIEW_GENRE'); 
     client.release();
     
     const genreNames = result.rows.map(row => row.name);
@@ -52,7 +49,6 @@ async function getGenreNames() {
 
 async function getMostPolarizedGenres() {
   try {
-    // Fetch genres
     const genres = await getGenres();
     genres.sort((a, b) => b.sdrating - a.sdrating);
     return genres;
@@ -63,7 +59,6 @@ async function getMostPolarizedGenres() {
 
 async function getBestRatedGenres() {
   try {
-    // Fetch genres
     const genres = await getGenres();
     genres.sort((a, b) => b.averagerating - a.averagerating);
     return genres;
@@ -74,7 +69,6 @@ async function getBestRatedGenres() {
 
 async function getMostReviewedGenres() {
   try {
-    // Fetch genres
     const genres = await getGenres();
     genres.sort((a, b) => b.reviewscount - a.reviewscount);
     return genres;
@@ -84,7 +78,6 @@ async function getMostReviewedGenres() {
 }
 async function getMostReleasedGenres() {
   try {
-    // Fetch genres
     const genres = await getGenres();
     genres.sort((a, b) => b.releasescount- a.releasescount);
     return genres;

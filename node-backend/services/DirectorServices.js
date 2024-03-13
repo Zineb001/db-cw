@@ -1,14 +1,11 @@
-const Movie = require("../models/Movie");
 const Director = require("../models/Director");
 
-const express = require('express');
-const cors = require('cors');
 const { Pool } = require('pg');
 
 
 const pool = new Pool({
   user: 'postgres',
-  host: 'postgres', // This should match the service name in docker-compose.yml
+  host: 'postgres', 
   database: 'coursework',
   password: 'mysecretpassword',
   port: 5432,

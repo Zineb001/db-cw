@@ -135,7 +135,6 @@ async function getMoviesOfDirectors(directors)
       });
     });
     
-    // Convert the Set back to an array if needed
     const uniqueMovieIdsArray = Array.from(uniqueMovieIds);
     const searchResults = await searchMovies(uniqueMovieIdsArray, null, null, null, null, null, null, null);
     return searchResults;
@@ -214,13 +213,13 @@ async function getMovieDiscouragements(given_movie_id) {
     movieResults.sort((a, b) => b.ratingcount - a.ratingcount);
     return movieResults;
   } catch (error) {
-    throw new Error("Failed to fetch movie recommendations");
+    throw new Error("Failed to fetch movie discouragements");
   }
 }
 
 async function getPredictedMovies() {
   try {
-    // Example: Fetch all users from the database
+
     const client = await pool.connect();
     const movieIds = [592, 2028, 5952, 588];
     const query = `
@@ -266,7 +265,7 @@ async function getPredictedMovies() {
     client.release();
     return movies;
   } catch (error) {
-    throw new Error("Failed to predicted movies");
+    throw new Error("Failed to get predicted movies");
   }
 }
 
