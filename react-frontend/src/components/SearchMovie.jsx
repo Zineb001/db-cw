@@ -109,6 +109,8 @@ function SearchMovie() {
   useEffect(() => {
     const params = new URLSearchParams(location.search);
     const genre = params.get('genre');
+    const actor = params.get('actor');
+    const tag = params.get('tag');
     if (genre) {
       // If genre is present in the URL, update the filters state with it
       setFilters(prevFilters => ({
@@ -116,8 +118,22 @@ function SearchMovie() {
         genres: [genre],
       }));
     }
+    if (actor) {
+      // If genre is present in the URL, update the filters state with it
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        cast: [actor],
+      }));
+    }
+    if (tag) {
+      // If genre is present in the URL, update the filters state with it
+      setFilters(prevFilters => ({
+        ...prevFilters,
+        tags: [tag],
+      }));
+    }
   }, [location.search]);
-
+    
 
   useEffect(() => {
     if (searchTimeoutRef.current) {

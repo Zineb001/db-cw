@@ -108,7 +108,14 @@ const MovieDetails = () => {
       // Redirect to the search page with the selected genre as a URL parameter
       window.location.href = `/search-movie?genre=${encodeURIComponent(genre)}`;
     };
-  
+    const handleActorClick = (actor) => {
+      // Redirect to the search page with the selected genre as a URL parameter
+      window.location.href = `/search-movie?actor=${encodeURIComponent(actor)}`;
+    };
+    const handleTagClick = (tag) => {
+      // Redirect to the search page with the selected genre as a URL parameter
+      window.location.href = `/search-movie?tag=${encodeURIComponent(tag)}`;
+    };
     return (
       <ThemeProvider theme={theme}>
         <NavigationBar />
@@ -195,7 +202,7 @@ const MovieDetails = () => {
                         >
                           <ButtonGroup  color="secondary1" variant="text" aria-label="Basic button group">
                             {movieDetails[0].tags.map(tag => (
-                              <Button size="small" key={tag} style={{maxWidth: '100px', maxHeight: '55px', minWidth: '100px', minHeight: '55px'}}>#{tag}</Button>
+                              <Button size="small" key={tag} style={{maxWidth: '100px', maxHeight: '55px', minWidth: '100px', minHeight: '55px'}} onClick={() =>  handleTagClick(tag)}>#{tag}</Button>
                             ))}
                           </ButtonGroup>
                         </Box>     
@@ -218,7 +225,7 @@ const MovieDetails = () => {
                         >
                           <ButtonGroup  color="secondary1" variant="text" aria-label="Basic button group">
                             {movieDetails[0].actors.map(actor => (
-                              <Button  key={actor} onClick={() => console.log(`Actor: ${actor}`)}>{actor}</Button>
+                              <Button  key={actor} onClick={() =>  handleActorClick(actor)}>{actor}</Button>
                             ))}
                           </ButtonGroup>
                         </Box>                  
