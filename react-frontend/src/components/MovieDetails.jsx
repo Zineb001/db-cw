@@ -104,6 +104,10 @@ const MovieDetails = () => {
     const handleTabClick = (tab) => {
       setActiveTab(tab);
     };
+    const handleGenreClick = (genre) => {
+      // Redirect to the search page with the selected genre as a URL parameter
+      window.location.href = `/search-movie?genre=${encodeURIComponent(genre)}`;
+    };
   
     return (
       <ThemeProvider theme={theme}>
@@ -171,7 +175,7 @@ const MovieDetails = () => {
                         >
                           <ButtonGroup  color="secondary1" variant="text" aria-label="Basic button group">
                             {movieDetails[0].genre.map(genre => (
-                              <Button  key={genre}>{genre}</Button>
+                              <Button  key={genre} onClick={() =>  handleGenreClick(genre)}>{genre}</Button>
                             ))}
                           </ButtonGroup>
                         </Box>
