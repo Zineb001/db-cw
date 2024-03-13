@@ -53,6 +53,7 @@ function DiscoverGenres() {
   const [mostReleasedGenres, setMostReleasedGenres] = useState([]);;
   const [personalityGenres, setPersonalityGenres] = useState([]);;
   const [HighlyRatedGenresData, setHighlyRatedGenresData] = useState([]);
+  const [lowRatedGenresData, setLowRatedGenresData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const hardcodedGenres = ["Action","Adventure","Animation","Children","Comedy","Crime","Documentary","Drama","Fantasy","Film-Noir","Horror","IMAX","Musical","Mystery","Romance","Sci-Fi","Thriller","War","Western"];
@@ -125,6 +126,27 @@ function DiscoverGenres() {
     }
   }, [selectedGenre]);
 
+  useEffect(() => {
+    const fetchLowRatedGenres = async () => {
+      if (!selectedGenre) return; 
+  
+      try {
+        const response = await fetch(`http://localhost:3001/api/lowRatedGenres?genres=${encodeURIComponent(selectedGenre)}`);
+        if (!response.ok) throw new Error('Failed to fetch low rated genres');
+        
+        const lowRatedData = await response.json();
+        setLowRatedGenresData(lowRatedData);
+      } catch (error) {
+        console.error('Error fetching low rated genres:', error);
+      }
+    };
+  
+    if (selectedGenre) { 
+      fetchLowRatedGenres();
+    }
+  }, [selectedGenre]);
+
+
 
   const [selectedChart, setSelectedChart] = useState('polarizing');
 
@@ -151,6 +173,15 @@ function DiscoverGenres() {
 
   // Find the data for the selected genre
   const selectedGenreData = genreStats.find(g => g.genre === selectedGenre) || {};
+
+  const getBackgroundColor = (index) => {
+    switch (index) {
+      case 0: return 'gold';
+      case 1: return 'silver';
+      case 2: return '#cd7f32';
+      default: return 'grey.300';
+    }
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -238,13 +269,54 @@ function DiscoverGenres() {
               <GenreHistogram data={personalityGenres} selectedGenre={selectedGenre} />
             </div>
           </div>
-          <div>
-            <h2>Genre Leaderboard</h2>
-            <ol>
+          <div class="horizontal-container-4">
+            <div>
+            <h4 className="h4">Users who liked {selectedGenre} also liked: </h4>
+            <Box className="highly-rated-genres-leaderboard" sx={{ maxWidth: 360, p: 1 }}>
               {HighlyRatedGenresData.map((genre, index) => (
-                <li key={index}>{genre}</li> 
+                <Box 
+                  key={genre} 
+                  sx={{
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    p: 1, 
+                    m: 1, 
+                    bgcolor: getBackgroundColor(index), 
+                    color: 'black', 
+                    borderRadius: '4px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <Box component="span" sx={{ width: '20%', textAlign: 'center' }}>{index + 1}</Box>
+                  <Box component="span" sx={{ width: '80%' }}>{genre}</Box>
+                </Box>
               ))}
-            </ol>
+            </Box>
+            </div>
+            <div>
+
+            <h4 className="h5">Users who didn't like {selectedGenre} also didn't like: </h4>
+            <Box className="low-rated-genres-leaderboard" sx={{ maxWidth: 360, p: 1 }}>
+              {lowRatedGenresData.map((genre, index) => (
+                <Box 
+                  key={genre} 
+                  sx={{
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    p: 1, 
+                    m: 1, 
+                    bgcolor: getBackgroundColor(index), 
+                    color: 'black', 
+                    borderRadius: '4px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <Box component="span" sx={{ width: '20%', textAlign: 'center' }}>{index + 1}</Box>
+                  <Box component="span" sx={{ width: '80%' }}>{genre}</Box>
+                </Box>
+              ))}
+            </Box>
+            </div>
           </div>
         </div>
         </>
