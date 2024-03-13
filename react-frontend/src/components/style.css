@@ -417,3 +417,38 @@
 }
 
 
+/* filters again */ 
+
+.dark-theme {
+  background-color: #333; 
+  color: white; 
+}
+
+.dark-theme button, .dark-theme .MuiButton-root {
+  background-color: #EEE; 
+  color: #333; 
+  border: 1px solid #AAA; 
+  padding: 0px 0px;
+  font-size: 0.875rem; 
+}
+
+.dark-theme .MuiInputBase-root, .dark-theme .MuiOutlinedInput-root {
+  background-color: #EEE;
+  color: #333; 
+}
+
+.dark-theme .MuiAutocomplete-root .MuiOutlinedInput-root {
+  background-color: #EEE; 
+  color: #333; 
+}
+
+.dark-theme .MuiPaper-root {
+  background-color: #555; 
+  color: white; 
+}
+
+.padding {
+  margin-left: 10px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+}
