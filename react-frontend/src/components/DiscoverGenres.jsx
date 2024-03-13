@@ -15,7 +15,6 @@ function calculateRatingsByGenre(movies) {
       const rating = parseFloat(movie.averagerating); 
 
       movie.genre.forEach(genre => { 
-        //console.log(`Processing genre: ${genre} for movie: ${movie.title} with rating: ${movie.averagerating}`);
           if (!genreStats[genre]) {
               genreStats[genre] = { '5 stars': 0, 'between 4 and 5': 0, 'between 3 and 4': 0, 'between 2 and 3': 0, 'between 1 and 2': 0, 'less than 1 star': 0 };
           }
@@ -53,7 +52,12 @@ function DiscoverGenres() {
   const [mostReviewedGenres, setMostReviewedGenres] = useState([]);;
   const [mostReleasedGenres, setMostReleasedGenres] = useState([]);;
   const [personalityGenres, setPersonalityGenres] = useState([]);;
+  const [HighlyRatedGenresData, setHighlyRatedGenresData] = useState([]);
+  const [lowRatedGenresData, setLowRatedGenresData] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
+
+  const hardcodedGenres = ["Action","Adventure","Animation","Children","Comedy","Crime","Documentary","Drama","Fantasy","Film-Noir","Horror","IMAX","Musical","Mystery","Romance","Sci-Fi","Thriller","War","Western"];
+  const [selectedGenre, setSelectedGenre] = useState(hardcodedGenres[0]);
 
   useEffect(() => {
     const fetchData = async () => {
@@ -102,6 +106,48 @@ function DiscoverGenres() {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    const fetchHighlyRatedGenres = async () => {
+      if (!selectedGenre) return; 
+  
+      try {
+        const response = await fetch(`http://localhost:3001/api/highlyRatedGenres?genres=${encodeURIComponent(selectedGenre)}`);
+        if (!response.ok) throw new Error('Failed to fetch highly rated genres');
+        
+        const highlyRatedData = await response.json();
+        setHighlyRatedGenresData(highlyRatedData);
+      } catch (error) {
+        console.error('Error fetching highly rated genres:', error);
+      }
+    };
+  
+    if (selectedGenre) { 
+      fetchHighlyRatedGenres();
+    }
+  }, [selectedGenre]);
+
+  useEffect(() => {
+    const fetchLowRatedGenres = async () => {
+      if (!selectedGenre) return; 
+  
+      try {
+        const response = await fetch(`http://localhost:3001/api/lowRatedGenres?genres=${encodeURIComponent(selectedGenre)}`);
+        if (!response.ok) throw new Error('Failed to fetch low rated genres');
+        
+        const lowRatedData = await response.json();
+        setLowRatedGenresData(lowRatedData);
+      } catch (error) {
+        console.error('Error fetching low rated genres:', error);
+      }
+    };
+  
+    if (selectedGenre) { 
+      fetchLowRatedGenres();
+    }
+  }, [selectedGenre]);
+
+
+
   const [selectedChart, setSelectedChart] = useState('polarizing');
 
   const handleChange = (event) => {
@@ -121,14 +167,21 @@ function DiscoverGenres() {
   const mostReleasedGenresNames = mostReleasedGenres.map(genre => genre.name);
   const releasescount = mostReleasedGenres.map(genre => parseInt(genre.releasescount));
 
-  const hardcodedGenres = ["Action","Adventure","Animation","Children","Comedy","Crime","Documentary","Drama","Fantasy","Film-Noir","Horror","IMAX","Musical","Mystery","Romance","Sci-Fi","Thriller","War","Western"];
 
   const genreStats = calculateRatingsByGenre(movieDetails);
   //console.log(genreStats)
-  const [selectedGenre, setSelectedGenre] = useState(hardcodedGenres[0]);
 
   // Find the data for the selected genre
   const selectedGenreData = genreStats.find(g => g.genre === selectedGenre) || {};
+
+  const getBackgroundColor = (index) => {
+    switch (index) {
+      case 0: return 'gold';
+      case 1: return 'silver';
+      case 2: return '#cd7f32';
+      default: return 'grey.300';
+    }
+  };
 
   return (
     <ThemeProvider theme={theme}>
@@ -214,6 +267,55 @@ function DiscoverGenres() {
             </div>
             <div className="histogram">
               <GenreHistogram data={personalityGenres} selectedGenre={selectedGenre} />
+            </div>
+          </div>
+          <div class="horizontal-container-4">
+            <div>
+            <h4 className="h4">Users who liked {selectedGenre} also liked: </h4>
+            <Box className="highly-rated-genres-leaderboard" sx={{ maxWidth: 360, p: 1 }}>
+              {HighlyRatedGenresData.map((genre, index) => (
+                <Box 
+                  key={genre} 
+                  sx={{
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    p: 1, 
+                    m: 1, 
+                    bgcolor: getBackgroundColor(index), 
+                    color: 'black', 
+                    borderRadius: '4px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <Box component="span" sx={{ width: '20%', textAlign: 'center' }}>{index + 1}</Box>
+                  <Box component="span" sx={{ width: '80%' }}>{genre}</Box>
+                </Box>
+              ))}
+            </Box>
+            </div>
+            <div>
+
+            <h4 className="h5">Users who didn't like {selectedGenre} also didn't like: </h4>
+            <Box className="low-rated-genres-leaderboard" sx={{ maxWidth: 360, p: 1 }}>
+              {lowRatedGenresData.map((genre, index) => (
+                <Box 
+                  key={genre} 
+                  sx={{
+                    display: 'flex', 
+                    alignItems: 'center', 
+                    p: 1, 
+                    m: 1, 
+                    bgcolor: getBackgroundColor(index), 
+                    color: 'black', 
+                    borderRadius: '4px',
+                    fontWeight: 'bold',
+                  }}
+                >
+                  <Box component="span" sx={{ width: '20%', textAlign: 'center' }}>{index + 1}</Box>
+                  <Box component="span" sx={{ width: '80%' }}>{genre}</Box>
+                </Box>
+              ))}
+            </Box>
             </div>
           </div>
         </div>
