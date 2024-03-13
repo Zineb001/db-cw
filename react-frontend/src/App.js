@@ -16,7 +16,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <Router>
         <Routes>
-          <Route path="/" element={<HomePage />} />
+          <Route path="/" element={<SearchMovie />} />
           <Route path="/search-movie" element={<SearchMovie />} />
           <Route path="/future-releases" element={<FutureReleases />} />
           <Route path="discover-genres" element={<DiscoverGenres />} />

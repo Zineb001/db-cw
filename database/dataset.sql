@@ -163,6 +163,7 @@ select * from mldb_personality_ratings;
 -- \COPY mldb_personality_ratings FROM '/Users/zineb/Downloads/personality-isf2018/ratings.csv' DELIMITER ',' CSV HEADER;
 
 
+--order is a keyword
 update tmdb_credits set cast_ = replace(cast_::text,'"order"','"order_"')::json;
 
 drop table if exists tmp_cast;
