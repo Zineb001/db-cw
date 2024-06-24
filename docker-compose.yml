@@ -9,7 +9,7 @@ services:
     environment:
       - PGHOST=postgres
       - PGUSER=postgres
-      - PGPASSWORD=mysecretpassword
+      - PGPASSWORD=
       - PGDATABASE=coursework
     ports:
       - "3001:3001"
@@ -19,7 +19,7 @@ services:
     image: postgres
     environment:
       - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=mysecretpassword
+      - POSTGRES_PASSWORD=
       - POSTGRES_DB=coursework
     volumes:
       - pgdata:/var/lib/postgresql/data
